@@ -1,6 +1,7 @@
 import { ChaseGame, AudioEngine } from './game.js';
 import { createLocalApi } from './offline-auth.mjs';
 import { setupMobile } from './mobile-controls.mjs';
+import { createOnlineRanking } from './online-ranking.mjs';
 
 const $ = id => document.getElementById(id);
 const format = n => Math.floor(n).toLocaleString('ja-JP');
@@ -10,6 +11,8 @@ const colorNames = ['ライム', 'シアン', 'ピンク', 'パープル', 'オ�
 let user = null, registering = false, runId = null, pending = null, saving = false, toastTimer, announcementTimer;
 const audio = new AudioEngine();
 const localService = createLocalApi();
+const onlineRanking = createOnlineRanking();
+let onlineRun = null;
 async function api(route, method = 'GET', body) {
   return localService.request(route, method, body);
 }
@@ -29,7 +32,7 @@ const game = new ChaseGame($('city'), {
   },
   onPause: () => { if (!$('pause-dialog').open) $('pause-dialog').showModal(); },
   onFinish: result => {
-    pending = { ...result, id: runId, userId: user.id };
+    pending = { ...result, id: runId, userId: user.id, onlineRun };
     try { sessionStorage.setItem('chase-unsaved', JSON.stringify(pending)); } catch { /* Saving still works without browser storage. */ }
     showResult(pending); saveResult();
   }
@@ -92,6 +95,8 @@ async function start() {
     const current = await api('me');
     if (current.user.id !== user.id) { user = current.user; garage(); toast('ログイン中のユーザーが変わりました。確認して、もう一度開始してください。'); return; }
     const run = await api('runs/start', 'POST', {}); runId = run.id; pending = null;
+    onlineRun = null;
+    try { onlineRun = await onlineRanking.start(user); } catch { toast('オンラインに接続できません。この走行は端末内に保存します。'); }
     for (const d of document.querySelectorAll('dialog[open]')) d.close();
     $('garage').hidden = true; $('hud').hidden = false; document.body.classList.add('playing'); window.scrollTo(0, 0); game.start(user.color);
   } catch (e) { toast(e.message); if (e.status === 401) showAuth(); }
@@ -123,7 +128,13 @@ async function saveResult() {
   saving = true; $('retry-save').disabled = true;
   try {
     const result = await api('runs/finish', 'POST', pending); user = result.user; renderUser(); $('result-score').textContent = format(result.score);
-    $('save-state').textContent = localService.persistent ? '✓ このブラウザに記録を保存しました。' : '✓ 記録を一時保存しました。この画面を閉じるまで保持します。'; pending = null;
+    const localMessage = localService.persistent ? '✓ このブラウザに記録を保存しました。' : '✓ この画面を閉じるまで記録を保持します。';
+    $('save-state').textContent = localMessage;
+    if (pending.onlineRun) {
+      try { await onlineRanking.finish(pending.onlineRun, pending); $('save-state').textContent = '✓ 端末への保存・オンラインランキングへの送信が完了しました。'; }
+      catch (error) { $('save-state').textContent = [400,401,404].includes(error.status) ? `${localMessage} オンライン記録は受け付けられませんでした。` : `${localMessage} オンライン送信待ちです。ランキングを開くと再送します。`; }
+    } else $('save-state').textContent = `${localMessage} この走行はオンライン対象外です。`;
+    pending = null;
     try { sessionStorage.removeItem('chase-unsaved'); } catch { /* Optional recovery cache. */ }
     $('retry-save').hidden = true; $('retry').disabled = false; $('back-garage').disabled = false;
   } catch (e) { $('save-state').textContent = `未保存：${e.message} この画面を残して再試行してください。`; $('retry-save').hidden = false; }
@@ -143,8 +154,16 @@ function listRow(rank, title, subtitle, score, mine = false) {
 function empty(list, text) { const p = document.createElement('p'); p.className = 'empty'; p.textContent = text; list.append(p); }
 $('leaderboard-button').addEventListener('click', async () => {
   $('leaderboard-list').replaceChildren(); empty($('leaderboard-list'), '読み込んでいます…'); $('leaderboard-dialog').showModal();
-  try { const { rows } = await api('leaderboard'); $('leaderboard-list').replaceChildren(); if (!rows.length) empty($('leaderboard-list'), 'まだ記録がありません。最初の逃走を決めよう。'); rows.forEach((r, i) => $('leaderboard-list').append(listRow(i + 1, r.displayName + (r.id === user.id ? ' 〈あなた〉' : ''), `最長逃走 ${time(r.longestTime)}`, r.score, r.id === user.id))); }
+  $('ranking-name').value = onlineRanking.playerFor(user)?.displayName || (user.isGuest ? `ドライバー-${user.id.slice(0,6).toUpperCase()}` : user.displayName);
+  $('ranking-name-status').textContent = '';
+  try { await onlineRanking.flush(user); const { rows } = await onlineRanking.leaderboard(user); $('leaderboard-list').replaceChildren(); if (!rows.length) empty($('leaderboard-list'), 'まだオンライン記録がありません。最初の逃走を決めよう。'); rows.forEach((r, i) => $('leaderboard-list').append(listRow(i + 1, r.displayName + (r.mine ? ' 〈あなた〉' : ''), `最長逃走 ${time(r.longestTime)}`, r.score, r.mine))); }
   catch (e) { $('leaderboard-list').replaceChildren(); empty($('leaderboard-list'), e.message); }
+});
+$('ranking-name-form').addEventListener('submit', async e => {
+  e.preventDefault(); $('ranking-name-save').disabled = true; $('ranking-name-status').textContent = '保存しています…';
+  try { await onlineRanking.rename(user, $('ranking-name').value.trim()); $('ranking-name-status').textContent = '表示名を保存しました。'; $('leaderboard-button').click(); }
+  catch (error) { $('ranking-name-status').textContent = error.message; }
+  finally { $('ranking-name-save').disabled = false; }
 });
 $('history-button').addEventListener('click', async () => {
   $('history-list').replaceChildren(); empty($('history-list'), '読み込んでいます…'); $('history-dialog').showModal();
@@ -156,7 +175,7 @@ $('history-button').addEventListener('click', async () => {
     for (const r of user.history) $('history-list').append(listRow(null, new Date(r.finished).toLocaleString('ja-JP'), `${time(r.seconds)} / ニアミス ${r.nearMisses} / 追跡不能 ${r.destroyed} / ×${r.maxCombo}`, r.score));
   } catch (e) { $('history-list').replaceChildren(); empty($('history-list'), e.message); }
 });
-$('offline-notice').textContent = localService.notice || 'オフライン版 · 記録とランキングはこのブラウザ内だけに保存';
+$('offline-notice').textContent = localService.notice || 'オンラインランキング対応 · 表示名と自己ベストを公開。アカウントと履歴はこの端末内に保存。';
 try { const result = await api('me'); user = result.user; garage(); restorePending(); }
 catch (e) { showAuth(); if (e.status !== 401) $('auth-error').textContent = e.message; }
 finally { $('loading').hidden = true; }
