@@ -7,7 +7,8 @@ const engine = strip(await read('game.js'));
 const offline = strip(await read('offline-auth.mjs'));
 const app = strip(await read('app.js'));
 const mobile = strip(await read('mobile-controls.mjs'));
-const javascript = `"use strict";\nconst City=(()=>{${city}\nreturn {roads,roadNodes,roadEdges,CITY_SIZE,plazas,parks,buildings,trees,parkedCars,obstacles,sampleRoad,roadRoute,nearestRoadNode,distanceToRoad,wrapCity};})();\nconst Renderer=(()=>{const {roads,roadNodes,plazas,parks,buildings,trees,sampleRoad,CITY_SIZE}=City;\n${renderer}\nreturn {drawCity};})();\nconst Mobile=(()=>{${mobile}\nreturn {TouchInput,touchDrive,setupMobile};})();\nconst Engine=(()=>{const {TouchInput,touchDrive}=Mobile;const {roads,roadNodes,CITY_SIZE:SIZE,buildings,obstacles,parkedCars,roadRoute,nearestRoadNode,sampleRoad,wrapCity}=City; const {drawCity}=Renderer;\n${engine}\nreturn {ChaseGame,AudioEngine};})();\nconst Offline=(()=>{${offline}\nreturn {createLocalApi};})();\n(async()=>{const {setupMobile}=Mobile;const {ChaseGame,AudioEngine}=Engine;const {createLocalApi}=Offline;\n${app}\n})().catch(error=>{document.getElementById('loading').textContent='起動できませんでした：'+error.message;console.error(error);});`;
+const ranking = strip(await read('online-ranking.mjs'));
+const javascript = `"use strict";\nconst City=(()=>{${city}\nreturn {roads,roadNodes,roadEdges,CITY_SIZE,plazas,parks,buildings,trees,parkedCars,obstacles,sampleRoad,roadRoute,nearestRoadNode,distanceToRoad,wrapCity};})();\nconst Renderer=(()=>{const {roads,roadNodes,plazas,parks,buildings,trees,sampleRoad,CITY_SIZE}=City;\n${renderer}\nreturn {drawCity};})();\nconst Mobile=(()=>{${mobile}\nreturn {TouchInput,touchDrive,setupMobile};})();\nconst Engine=(()=>{const {TouchInput,touchDrive}=Mobile;const {roads,roadNodes,CITY_SIZE:SIZE,buildings,obstacles,parkedCars,roadRoute,nearestRoadNode,sampleRoad,wrapCity}=City; const {drawCity}=Renderer;\n${engine}\nreturn {ChaseGame,AudioEngine};})();\nconst Offline=(()=>{${offline}\nreturn {createLocalApi};})();\nconst Ranking=(()=>{${ranking}\nreturn {createOnlineRanking};})();\n(async()=>{const {createOnlineRanking}=Ranking;const {setupMobile}=Mobile;const {ChaseGame,AudioEngine}=Engine;const {createLocalApi}=Offline;\n${app}\n})().catch(error=>{document.getElementById('loading').textContent='起動できませんでした：'+error.message;console.error(error);});`;
 const css = await read('style.css');
 const favicon = `data:image/svg+xml,${encodeURIComponent(await read('favicon.svg'))}`;
 let html = await read('index.html');
@@ -15,8 +16,8 @@ html = html.replace('<link rel="icon" href="/favicon.svg">', `<link rel="icon" h
   .replace('<link rel="stylesheet" href="/style.css">', `<style>${css}</style>`)
   .replace('<script type="module" src="/app.js"></script>', '')
   .replace('href="/" aria-label="CHASE BREAK ホーム"', 'href="./index.html" aria-label="CHASE BREAK ホーム"')
-  .replace('<title>CHASE BREAK — 夜を振り切れ。</title>', '<title>CHASE BREAK — オフライン版</title>')
-  .replace('NIGHT CITY / ONLINE', 'NIGHT CITY / OFFLINE')
+
+
   .replace('<main id="garage" hidden>', '<main id="garage" hidden><div id="offline-notice" class="offline-notice" role="status"></div>')
   .replace('</form><p class="auth-footnote">', '</form><button id="guest-play" class="secondary" type="button">登録せずに遊ぶ →</button><p class="auth-footnote">')
   .replace('ChatGPT・Claudeのアカウントは不要。<br>初めての方は「新規登録」から作成できます。', 'アカウントと記録は、このブラウザ内だけに保存されます。<br>初めての方は「新規登録」から作成できます。')
