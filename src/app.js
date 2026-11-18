@@ -93,7 +93,7 @@ async function start() {
     if (current.user.id !== user.id) { user = current.user; garage(); toast('ログイン中のユーザーが変わりました。確認して、もう一度開始してください。'); return; }
     const run = await api('runs/start', 'POST', {}); runId = run.id; pending = null;
     for (const d of document.querySelectorAll('dialog[open]')) d.close();
-    $('garage').hidden = true; $('hud').hidden = false; document.body.classList.add('playing'); game.start(user.color);
+    $('garage').hidden = true; $('hud').hidden = false; document.body.classList.add('playing'); window.scrollTo(0, 0); game.start(user.color);
   } catch (e) { toast(e.message); if (e.status === 401) showAuth(); }
   finally { $('start').disabled = false; $('retry').disabled = false; }
 }
