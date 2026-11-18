@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { TouchInput, touchDrive, touchLayout } from '../src/mobile-controls.mjs';
+import { TouchInput, touchDrive, touchLayout, bindReverseButton } from '../src/mobile-controls.mjs';
 import { ChaseGame } from '../src/game.js';
 
 test('phones show touch controls in landscape and portrait; desktop stays unchanged', () => {
@@ -24,6 +24,15 @@ test('touch steering aims toward the stick and releasing it stops acceleration',
   assert.equal(touchDrive(player,{x:0,y:1}).steer,1);
   assert.equal(touchDrive(player,{x:0,y:-1}).steer,-1);
   assert.equal(touchDrive(player,{x:.5,y:0}).targetSpeed,145);
+});
+test('a second finger toggles reverse immediately while steering stays held', () => {
+  const button=new EventTarget(),input=new TouchInput();input.pointers.set(1,'stick');input.stick={x:.8,y:-.3};
+  const game={mode:'playing',reverseMode:false,touchInput:input,hud(){}};bindReverseButton(button,game);
+  const down=new Event('pointerdown',{cancelable:true});Object.assign(down,{pointerId:2,isPrimary:false});button.dispatchEvent(down);
+  assert.equal(down.defaultPrevented,true);assert.equal(game.reverseMode,true);assert.equal(input.pointers.get(1),'stick');assert.deepEqual(input.stick,{x:.8,y:-.3});
+  const click=new Event('click');Object.assign(click,{detail:1});button.dispatchEvent(click);assert.equal(game.reverseMode,true);
+  const keyboard=new Event('click');Object.assign(keyboard,{detail:0});button.dispatchEvent(keyboard);assert.equal(game.reverseMode,false);
+  game.mode='paused';button.dispatchEvent(new Event('pointerdown'));assert.equal(game.reverseMode,false);
 });
 function simulation(){const game=Object.create(ChaseGame.prototype);Object.assign(game,{keys:new Set(),w:844,h:390,touchLayout:true,audio:{update(){},tone(){}},onAnnouncement(){},onHud(){},onPause(){},onFinish(){}});game.start('#bcff4a');game.police=[];game.pickups=[];game.spawnTimer=999;game.nextPickup=999;return game;}
 test('mobile reverse is cancelled by usable boost, brake has inertia, pause releases fingers', () => {
