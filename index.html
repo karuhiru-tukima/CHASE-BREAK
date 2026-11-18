@@ -16,6 +16,77 @@ html{touch-action:pan-x pan-y;overscroll-behavior:none}body.playing{overflow:hid
 
 .pause-rotate{display:none}.portrait-device #pause-dialog .pause-rotate{display:block;color:var(--lime);font-size:21px;line-height:1.8}.portrait-device #pause-dialog>h2,.portrait-device #pause-dialog>.kicker,.portrait-device #pause-dialog #resume{display:none}
 
+/* Keep the mobile garage and driving controls inside the visible screen. */
+@media(orientation:landscape){
+  html:has(body.touch-layout){height:100%;overflow:hidden}
+  body.touch-layout{height:100dvh;min-height:0;overflow:hidden}
+  .touch-layout header{height:46px;padding:0 max(18px,env(safe-area-inset-right)) 0 max(18px,env(safe-area-inset-left))}
+  .touch-layout #garage{height:calc(100dvh - 46px);max-width:none;padding:8px max(18px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left));display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:20px minmax(0,1fr);gap:8px 20px;overflow:hidden}
+  .touch-layout #garage>.eyebrow,.touch-layout #garage>footer,.touch-layout .vehicle-label{display:none}
+  .touch-layout #offline-notice{grid-column:1/-1;margin:0;padding:2px 8px;font-size:9px;line-height:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .touch-layout .hero{grid-column:1;grid-row:2;min-height:0;min-width:0;align-items:stretch}
+  .touch-layout .hero-copy{padding:0;display:flex;flex-direction:column;justify-content:center;width:100%;min-height:0}
+  .touch-layout .hero .kicker{font-size:8px;margin:0 0 5px}
+  .touch-layout .hero h1{font-size:clamp(38px,16dvh,68px);line-height:.85;letter-spacing:-3px;margin:4px 0 8px}
+  .touch-layout .tagline{font-size:11px;line-height:1.5;margin:4px 0}
+  .touch-layout .start-button{width:100%;max-width:330px;margin-top:8px;padding:12px 18px;font-size:17px;flex-shrink:0}
+  .touch-layout .start-button>span{top:12px;right:18px}
+  .touch-layout .start-button small{font-size:8px;margin-top:3px}
+  .touch-layout .start-note{margin-top:7px;line-height:12px;letter-spacing:0}
+  .touch-layout .start-note:after{font-size:9px}
+  .touch-layout .dashboard{grid-column:2;grid-row:2;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) minmax(0,1fr) 50px;gap:7px;margin:0;min-height:0}
+  .touch-layout .dashboard .panel{padding:9px 12px;min-height:0;min-width:0}
+  .touch-layout .panel-head h2,.touch-layout .panel-head strong{font-size:9px;letter-spacing:1px}
+  .touch-layout .panel-head>span{font-size:7px}
+  .touch-layout .score-number{font-size:29px;line-height:1.1;margin:4px 0}
+  .touch-layout .record-bottom{font-size:9px;gap:5px;flex-wrap:nowrap}
+  .touch-layout .record-bottom button{font-size:9px;white-space:nowrap}
+  .touch-layout .swatches{gap:12px;margin:10px 0 8px}
+  .touch-layout .swatch{width:25px;height:25px;flex-shrink:0}
+  .touch-layout .customize p{font-size:9px}
+  .touch-layout .dashboard .ranking-card{grid-column:1;display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .touch-layout .ranking-card .panel-head{display:block}
+  .touch-layout .ranking-card .panel-head>span{display:block;margin-top:4px}
+  .touch-layout .ranking-title{font-size:12px;line-height:1.4;margin:0;white-space:nowrap}
+  .touch-layout .ranking-note{display:none}
+  .touch-layout #auth{height:calc(100dvh - 46px);overflow-y:auto;overscroll-behavior:contain;padding:15px 20px;grid-template-columns:1fr 1fr;align-items:start}
+  .touch-layout .auth-intro h1{font-size:60px}
+  .touch-layout .auth-card{margin:0;padding:20px}
+  .touch-layout #hud{height:100dvh;bottom:auto}
+}
+@media(max-height:340px) and (orientation:landscape){
+  .touch-layout header{height:40px}
+  .touch-layout #garage,.touch-layout #auth{height:calc(100dvh - 40px)}
+  .touch-layout #garage{gap:5px 14px;padding-top:5px;padding-bottom:5px;grid-template-rows:18px minmax(0,1fr)}
+  .touch-layout .tagline{display:none}
+  .touch-layout .hero h1{font-size:clamp(34px,15dvh,48px);margin:3px 0 5px}
+  .touch-layout .start-button{padding:9px 14px;margin-top:5px}
+  .touch-layout .dashboard{grid-template-rows:minmax(0,1fr) minmax(0,1fr) 40px;gap:5px}
+  .touch-layout .dashboard .panel{padding:6px 9px}
+  .touch-layout .score-number{font-size:24px;margin:2px 0}
+  .touch-layout .swatches{margin:7px 0 5px;gap:10px}
+  .touch-layout .swatch{width:22px;height:22px}
+  .touch-layout .customize p{font-size:8px}
+}
+@media(max-width:620px) and (orientation:landscape){
+  .touch-layout .hud-bottom{width:200px;left:46%}
+  .touch-layout .hud-bottom>div:not(.speed){width:54px}
+}
+
+@media(orientation:landscape){
+  .touch-layout .hud-top{display:grid;grid-template-columns:minmax(80px,1fr) auto minmax(80px,1fr);gap:12px;padding-right:84px;align-items:start}
+  .touch-layout .hud-time strong{margin:3px 0 0}
+  .touch-layout #pause-button{position:fixed;top:max(12px,env(safe-area-inset-top));right:max(18px,env(safe-area-inset-right));width:70px;height:44px;padding:0;font-size:10px;border-color:#bcff4a80;background:#101d16f5;z-index:5}
+  .touch-layout:has(#pause-dialog[open]) #hud{visibility:hidden}
+  .touch-layout #pause-dialog{width:min(480px,calc(100vw - 48px));max-height:calc(100dvh - 24px);padding:18px 22px}
+  .touch-layout #pause-dialog[open]{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+  .touch-layout #pause-dialog>.kicker,.touch-layout #pause-dialog>h2,.touch-layout #pause-dialog>.muted{grid-column:1/-1;margin:0}
+  .touch-layout #pause-dialog>h2{font-size:22px}
+  .touch-layout #pause-dialog>.muted{font-size:12px;line-height:1.5}
+  .touch-layout #pause-dialog>.small{font-size:10px}
+  .touch-layout #pause-dialog>.primary,.touch-layout #pause-dialog>.secondary{margin:0;padding:12px 8px;font-size:13px;min-height:44px}
+}
+
 
 .offline-notice{font-size:10px;color:#b6c49e;border:1px solid #bcff4a30;border-radius:4px;background:#182311d9;padding:10px 13px;margin:0 0 23px;line-height:1.6} </style></head>
 <body>
@@ -269,6 +340,16 @@ class TouchInput {
   release(id) { if (this.pointers.get(id) === 'stick') this.stick = { x: 0, y: 0 }; this.pointers.delete(id); }
 }
 
+function bindReverseButton(button, game) {
+  const toggle = () => {
+    if (game.mode !== 'playing') return;
+    game.inputMode = 'touch'; game.reverseMode = !game.reverseMode; game.hud();
+  };
+  // A second finger must work while the first finger is holding the stick.
+  button.addEventListener('pointerdown', e => { e.preventDefault(); toggle(); });
+  button.addEventListener('click', e => { if (e.detail === 0) toggle(); });
+}
+
 function setupMobile(game) {
   const controls = document.getElementById('touch-controls');
   const pad = document.getElementById('steering-pad');
@@ -308,9 +389,7 @@ function setupMobile(game) {
     };
     for (const event of ['pointerup', 'pointercancel', 'lostpointercapture']) element.addEventListener(event, release);
   }
-  document.getElementById('reverse-button').addEventListener('click', () => {
-    if (game.mode === 'playing') { game.inputMode = 'touch'; game.reverseMode = !game.reverseMode; game.hud(); }
-  });
+  bindReverseButton(document.getElementById('reverse-button'), game);
   // Suppress browser gestures without preventing ordinary form scrolling.
   for (const name of ['gesturestart', 'gesturechange', 'gestureend']) document.addEventListener(name, e => e.preventDefault(), { passive: false });
   document.addEventListener('touchmove', e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
@@ -917,7 +996,7 @@ async function start() {
     if (current.user.id !== user.id) { user = current.user; garage(); toast('ログイン中のユーザーが変わりました。確認して、もう一度開始してください。'); return; }
     const run = await api('runs/start', 'POST', {}); runId = run.id; pending = null;
     for (const d of document.querySelectorAll('dialog[open]')) d.close();
-    $('garage').hidden = true; $('hud').hidden = false; document.body.classList.add('playing'); game.start(user.color);
+    $('garage').hidden = true; $('hud').hidden = false; document.body.classList.add('playing'); window.scrollTo(0, 0); game.start(user.color);
   } catch (e) { toast(e.message); if (e.status === 401) showAuth(); }
   finally { $('start').disabled = false; $('retry').disabled = false; }
 }
