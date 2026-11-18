@@ -16,6 +16,16 @@ export class TouchInput {
   release(id) { if (this.pointers.get(id) === 'stick') this.stick = { x: 0, y: 0 }; this.pointers.delete(id); }
 }
 
+export function bindReverseButton(button, game) {
+  const toggle = () => {
+    if (game.mode !== 'playing') return;
+    game.inputMode = 'touch'; game.reverseMode = !game.reverseMode; game.hud();
+  };
+  // A second finger must work while the first finger is holding the stick.
+  button.addEventListener('pointerdown', e => { e.preventDefault(); toggle(); });
+  button.addEventListener('click', e => { if (e.detail === 0) toggle(); });
+}
+
 export function setupMobile(game) {
   const controls = document.getElementById('touch-controls');
   const pad = document.getElementById('steering-pad');
@@ -55,9 +65,7 @@ export function setupMobile(game) {
     };
     for (const event of ['pointerup', 'pointercancel', 'lostpointercapture']) element.addEventListener(event, release);
   }
-  document.getElementById('reverse-button').addEventListener('click', () => {
-    if (game.mode === 'playing') { game.inputMode = 'touch'; game.reverseMode = !game.reverseMode; game.hud(); }
-  });
+  bindReverseButton(document.getElementById('reverse-button'), game);
   // Suppress browser gestures without preventing ordinary form scrolling.
   for (const name of ['gesturestart', 'gesturechange', 'gestureend']) document.addEventListener(name, e => e.preventDefault(), { passive: false });
   document.addEventListener('touchmove', e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
