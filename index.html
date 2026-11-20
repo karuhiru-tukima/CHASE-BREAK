@@ -233,6 +233,11 @@ body.ranking-open{overflow:hidden}
 }
 
 
+/* Use the same vector controls and neutral button appearance on iOS and desktop. */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}button,input{-webkit-appearance:none;appearance:none}button{color:inherit}.ui-symbol{display:inline-block;width:1em;height:1em;vertical-align:-.12em;line-height:1;flex-shrink:0}.ui-symbol svg{display:block;width:100%;height:100%;overflow:visible}.start-button>span>.ui-symbol{position:static;font-size:inherit}.wanted>span{white-space:nowrap}
+
+#ranking-back{display:inline-flex;align-items:center;justify-content:center;gap:8px;flex-shrink:0;min-height:46px;padding:12px 20px;font-size:15px;font-weight:800;background:var(--lime);border:1px solid var(--lime);color:#10170c;border-radius:5px;white-space:nowrap}#back-garage{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:44px;padding:11px 16px;font-size:14px;font-weight:700;border:1px solid #ffffff65;border-radius:5px;background:#ffffff0c;color:var(--text)}@media(max-height:350px){.touch-layout #ranking-back{min-height:42px;padding:9px 14px;font-size:14px}}
+
 .offline-notice{font-size:10px;color:#b6c49e;border:1px solid #bcff4a30;border-radius:4px;background:#182311d9;padding:10px 13px;margin:0 0 23px;line-height:1.6} </style></head>
 <body>
   <canvas id="city" aria-label="夜の街を走るカーチェイスゲーム"></canvas>
@@ -247,11 +252,11 @@ body.ranking-open{overflow:hidden}
   <section id="auth" class="auth-screen" hidden><div class="auth-intro"><p class="kicker">THE CITY IS YOUR PLAYGROUND.</p><h1>CHASE<br><span>BREAK.</span></h1><p>サイレンを背に、<br>まだ見ぬ自己ベストへ。</p><span class="auth-caption">独自アカウントで遊べる、カーチェイス。</span></div><div class="auth-card"><div class="eyebrow">DRIVER ACCESS / 01</div><h2 id="auth-title">おかえり、ドライバー。</h2><p id="auth-description">ガレージにログインして、夜の街へ。</p><div class="tabs"><button id="login-tab" class="active" type="button">ログイン</button><button id="register-tab" type="button">新規登録</button></div><form id="auth-form"><label>ユーザー名<input id="username" name="username" autocomplete="username" pattern="[a-zA-Z0-9_]{3,24}" minlength="3" maxlength="24" placeholder="例：night_driver" required></label><label id="display-label" hidden>表示名<input id="displayName" name="displayName" maxlength="24" placeholder="ランキングに表示される名前"></label><label>パスワード<input id="password" name="password" type="password" autocomplete="current-password" minlength="8" maxlength="128" placeholder="8文字以上" required></label><p id="auth-error" class="error" role="alert"></p><button id="auth-submit" class="primary" type="submit">ログインして始める ↗</button></form><button id="guest-play" class="secondary" type="button">登録せずに遊ぶ →</button><p class="auth-footnote">アカウントと記録は、このブラウザ内だけに保存されます。<br>初めての方は「新規登録」から作成できます。</p></div></section>
   <section id="hud" hidden><div class="hud-top"><div class="hud-score"><small>SCORE</small><strong id="score">000000</strong><span id="combo"></span></div><div class="wanted"><span id="wanted-stars">★ ☆ ☆ ☆ ☆</span><small id="wanted-text">手配レベル 1</small></div><div class="hud-time"><small>ESCAPE TIME</small><strong id="time">00:00</strong><button id="pause-button" class="icon-button">Ⅱ 一時停止</button></div></div><div id="announcement" role="status"></div><div id="capture-warning" hidden>⚠ 包囲されている！ 加速して脱出 <progress id="capture" max="100" value="0"></progress></div><div class="hud-bottom"><div><span>INTEGRITY <b id="health-value">100%</b></span><progress id="health" max="100" value="100"></progress></div><div class="speed"><strong id="speed">0</strong><span id="drive-mode">KM/H</span></div><div><span>BOOST <b id="boost-status">左クリック</b></span><progress id="boost" max="100" value="100"></progress></div></div><p id="mouse-hint">マウスで移動 · 左ブースト · 右ブレーキ · SHIFT長押しでバック</p><div id="touch-controls" aria-label="タッチ操作"><div id="steering-pad" data-touch="stick" role="group" aria-label="移動スティック"><span id="steering-knob"></span><small>DRIVE</small></div><div class="touch-actions"><button id="reverse-button" aria-pressed="false" aria-label="バック切り替え">R<small>タップ</small></button><button data-touch="brake" aria-label="ブレーキ長押し">BRAKE<small>長押し</small></button><button data-touch="boost" aria-label="ブースト長押し">BOOST<small>長押し</small></button></div></div></section>
   <aside id="rotate-notice" role="status"><span>↻</span><h2>スマホを横向きにしてね</h2><p>左スティックで移動。右のボタンでブレーキ・ブースト。<br>Rをタップするとバックに切り替わります。</p></aside><div id="loading">エンジンを準備しています…</div>
-  <dialog id="help-dialog"><button class="close-dialog" aria-label="閉じる">×</button><p class="kicker">DRIVER'S MANUAL</p><h2>街を、味方につけろ。</h2><div class="control-list"><p><kbd>マウス</kbd><span>カーソルの方向へ自動で走る</span></p><p><kbd>右クリック長押し</kbd><span>ブレーキ・停止</span></p><p><kbd>W A S D / 矢印キー</kbd><span>キーボード操作にも切り替え可</span></p><p><kbd>左クリック長押し / SPACE</kbd><span>ブーストで包囲を突破</span></p><p><kbd>SHIFT 長押し</kbd><span>バック（ブーストで前進に切り替え）</span></p><p><kbd>ESC</kbd><span>一時停止</span></p></div><p class="muted">スマホは横画面。左スティックを動かして走行し、BRAKE・BOOSTは長押し。Rはタップでバックを切り替え、ブーストすると前進に戻ります。</p><p class="muted">近くをすり抜けるとニアミスボーナス。パトカーを建物へ誘い込むと追跡不能に。続けて決めると最大5倍のコンボ！</p><p class="muted">ブーストが空になると35％回復するまで再使用できません。緑の＋は修理、青い稲妻はブースト回復。耐久値が0、または低速で包囲されると終了です。</p><button class="primary close-dialog">了解、走ろう。</button></dialog>
+  <dialog id="help-dialog"><button class="close-dialog" aria-label="閉じる">×</button><p class="kicker">DRIVER'S MANUAL</p><h2>街を、味方につけろ。</h2><div class="control-list"><p><kbd>マウス</kbd><span>カーソルの方向へ自動で走る</span></p><p><kbd>右クリック長押し</kbd><span>ブレーキ・停止</span></p><p><kbd>W A S D / 矢印キー</kbd><span>キーボード操作にも切り替え可</span></p><p><kbd>左クリック長押し / SPACE</kbd><span>ブーストで包囲を突破</span></p><p><kbd>SHIFT 長押し</kbd><span>バック（ブーストで前進に切り替え）</span></p><p><kbd>ESC</kbd><span>一時停止</span></p></div><p class="muted">スマホは横画面。左スティックを動かして走行し、BRAKE・BOOSTは長押し。Rはタップでバックを切り替え、ブーストすると前進に戻ります。</p><p class="muted">近くをすり抜けるとニアミスボーナス。ブースト中に300km/h以上で前方のパトカーにぶつかると一撃で撃破（側面・後方は対象外）。建物へ誘い込んでも追跡不能に。続けて決めると最大5倍のコンボ！</p><p class="muted">ブーストが空になると35％回復するまで再使用できません。緑の＋は修理、青い稲妻はブースト回復。耐久値が0、または低速で包囲されると終了です。</p><button class="primary close-dialog">了解、走ろう。</button></dialog>
   <dialog id="pause-dialog"><p class="pause-rotate">↻ スマホを横向きにしてね</p><p class="kicker">TAKE A BREATH</p><h2>まだ、逃げられる。</h2><p class="muted">一時停止中は逃走時間も止まります。</p><button id="resume" class="primary">逃走を続ける →</button><button id="abandon" class="secondary">今回の逃走をやめる</button><p class="muted small">中断したプレイの記録は保存されません。</p></dialog>
-  <dialog id="result-dialog"><p class="kicker" id="result-type">END OF THE CHASE</p><h2 id="result-title">追跡終了。</h2><div class="result-layout"><section class="result-performance" aria-label="今回の逃走結果"><div id="new-best" class="best-badge" hidden>自己ベスト更新！</div><div class="result-score" id="result-score">0</div><p class="score-caption">今回のスコア</p><div class="result-stats"><div><small>逃走時間</small><b id="result-time"></b></div><div><small>ニアミス</small><b id="result-near"></b></div><div><small>追跡不能</small><b id="result-destroyed"></b></div><div><small>最大倍率</small><b id="result-combo"></b></div></div></section><section id="online-result" class="online-result" data-state="sending" aria-live="polite"><h3 id="online-save-title">オンラインに送信中…</h3><p id="save-state">端末への保存を準備しています。</p><div class="result-online-place"><span>あなたの順位</span><strong id="result-online-rank">送信後に確定</strong><small>全プレイヤー共通の自己ベスト順位</small></div></section></div><button id="retry-save" class="secondary" hidden>端末への保存を再試行</button><div class="result-actions"><button id="result-ranking-button" class="primary">ランキングで確認する</button><button id="retry" class="secondary">もう一度逃走する</button><button id="back-garage" class="text-button">ホームへ戻る</button></div></dialog>
+  <dialog id="result-dialog"><p class="kicker" id="result-type">END OF THE CHASE</p><h2 id="result-title">追跡終了。</h2><div class="result-layout"><section class="result-performance" aria-label="今回の逃走結果"><div id="new-best" class="best-badge" hidden>自己ベスト更新！</div><div class="result-score" id="result-score">0</div><p class="score-caption">今回のスコア</p><div class="result-stats"><div><small>逃走時間</small><b id="result-time"></b></div><div><small>ニアミス</small><b id="result-near"></b></div><div><small>追跡不能</small><b id="result-destroyed"></b></div><div><small>最大倍率</small><b id="result-combo"></b></div></div></section><section id="online-result" class="online-result" data-state="sending" aria-live="polite"><h3 id="online-save-title">オンラインに送信中…</h3><p id="save-state">端末への保存を準備しています。</p><div class="result-online-place"><span>あなたの順位</span><strong id="result-online-rank">送信後に確定</strong><small>全プレイヤー共通の自己ベスト順位</small></div></section></div><button id="retry-save" class="secondary" hidden>端末への保存を再試行</button><div class="result-actions"><button id="result-ranking-button" class="primary">ランキングで確認する</button><button id="retry" class="secondary">もう一度逃走する</button><button id="back-garage" class="text-button">← ホームへ戻る</button></div></dialog>
   <section id="ranking-screen" class="ranking-view" aria-labelledby="ranking-title" hidden>
-    <div class="ranking-head"><div><h2 id="ranking-title" tabindex="-1">🏆 みんなのランキング</h2><p>全プレイヤー共通 · 自己ベスト TOP 30</p></div><button id="ranking-back" class="icon-button" type="button">ホームへ戻る</button></div>
+    <div class="ranking-head"><div><h2 id="ranking-title" tabindex="-1">🏆 みんなのランキング</h2><p>全プレイヤー共通 · 自己ベスト TOP 30</p></div><button id="ranking-back" class="icon-button" type="button">← ホームへ戻る</button></div>
     <div class="ranking-self" aria-label="あなたのオンライン成績"><div><span>あなたの順位</span><strong id="ranking-my-rank">確認中…</strong></div><div><span>オンライン自己ベスト</span><strong id="ranking-my-score">—</strong></div><div><span>公開する名前</span><strong id="ranking-my-name">—</strong><small>あなた</small></div></div>
     <p id="ranking-state" class="ranking-state" role="status">オンラインの記録を読み込んでいます…</p>
     <div class="ranking-table-scroll" role="region" aria-label="全員の自己ベスト一覧"><table class="ranking-table"><thead><tr><th scope="col">順位</th><th scope="col">ドライバー</th><th scope="col">自己ベスト</th><th scope="col" class="ranking-time">最長逃走</th></tr></thead><tbody id="leaderboard-list"></tbody></table><p id="ranking-empty" hidden></p></div>
@@ -260,6 +265,50 @@ body.ranking-open{overflow:hidden}
   <dialog id="history-dialog"><button class="close-dialog" aria-label="閉じる">×</button><p class="kicker">YOUR FOOTPRINT</p><h2>あなたの逃走記録</h2><p class="muted">あなただけに表示される、直近12回の記録。</p><div id="history-list"></div></dialog>
   <div id="toast" role="status" hidden></div>
 <script>"use strict";
+const Icons=(()=>{// Shared vector symbols keep Safari and desktop fonts from changing controls.
+const paths = {
+  '←': '<path d="M21 12H3m7-7-7 7 7 7"/>',
+  '↗': '<path d="M5 19 19 5M5 5h14v14"/>',
+  '→': '<path d="M3 12h18m-7-7 7 7-7 7"/>',
+  '🏆': '<path d="M7 3h10v7a5 5 0 0 1-10 0ZM7 5H3v3a4 4 0 0 0 4 4m10-7h4v3a4 4 0 0 1-4 4m-5 3v6m-4 0h8"/>',
+  '〽': '<path fill="currentColor" stroke="none" d="m15 1-12 13h8l-2 9 12-13h-8Z"/>',
+  'Ⅱ': '<path d="M8 4v16M16 4v16" stroke-width="4"/>',
+  '⚠': '<path d="m12 3 10 18H2Zm0 6v5m0 3v.2"/>',
+  '↻': '<path d="M20 10a8 8 0 1 0-1 8m1-14v6h-6"/>',
+  '×': '<path d="m5 5 14 14M19 5 5 19"/>',
+  '✓': '<path d="m4 12 5 5L20 6"/>',
+  '★': '<path fill="currentColor" d="m12 2 3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1Z"/>',
+  '☆': '<path d="m12 2 3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1Z"/>'
+};
+const symbols = /[←↗→🏆〽Ⅱ⚠↻×✓★☆]/u;
+function iconify(root = document.body) {
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  while (walker.nextNode()) {
+    const node = walker.currentNode;
+    if (!node.parentElement.closest('script,style,svg,input,textarea') && symbols.test(node.data)) nodes.push(node);
+  }
+  for (const node of nodes) {
+    const fragment = document.createDocumentFragment();
+    for (const character of node.data) {
+      if (!paths[character]) { fragment.append(document.createTextNode(character)); continue; }
+      const span = document.createElement('span'); span.className = 'ui-symbol';
+      span.setAttribute('aria-hidden', 'true');
+      span.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false">${paths[character]}</svg>`;
+      fragment.append(span);
+    }
+    node.replaceWith(fragment);
+  }
+}
+function wantedStars(element, level) {
+  if (element.dataset.level === String(level)) return;
+  element.dataset.level = String(level);
+  element.textContent = Array.from({length:5}, (_,i) => i < level ? '★' : '☆').join(' ');
+  element.setAttribute('aria-label', `手配レベル ${level}`);
+  iconify(element);
+}
+
+return {iconify,wantedStars};})();
 const City=(()=>{const CITY_SIZE = 3300;
 const roads=[],roadNodes=[],roadEdges=[],buildings=[],trees=[],parkedCars=[];
 const plazas=[{x:1600,y:1600,r:116,name:'NEON JUNCTION'},{x:700,y:950,r:76,name:'OLD TOWN'},{x:2520,y:2150,r:88,name:'DOCKSIDE'}];
@@ -565,6 +614,17 @@ const angleDiff = (a, b) => Math.atan2(Math.sin(b - a), Math.cos(b - a));
 const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 const rand = (a, b) => a + Math.random() * (b - a);
 
+const RAM_MIN_KMH = 300;
+function canBoostRam(player, car, boosting) {
+  if (!boosting) return false;
+  const fx = Math.cos(player.angle), fy = Math.sin(player.angle);
+  if ((player.vx * fx + player.vy * fy) * .65 < RAM_MIN_KMH) return false;
+  const dx = car.x - player.x, dy = car.y - player.y, distance = Math.hypot(dx, dy);
+  if (distance <= .01 || distance >= 39 || dx * fx + dy * fy < distance * .5) return false;
+  const cvx = Math.cos(car.angle || 0) * (car.speed || 0), cvy = Math.sin(car.angle || 0) * (car.speed || 0);
+  return (player.vx - cvx) * dx + (player.vy - cvy) * dy > 0;
+}
+
 function circleRect(x, y, radius, rect) {
   const reach=(rect.w+rect.h)*.5+radius;
   if(Math.abs(x-rect.x-rect.w/2)>reach||Math.abs(y-rect.y-rect.h/2)>reach)return null;
@@ -822,10 +882,13 @@ class ChaseGame {
       if (d > 140 && c.near) { if (!c.nearHit && c.nearSpeed > 145) this.event('near'); c.near = false; c.nearCooldown = 3; }
       if (d < 39) {
         c.nearHit = true;
+        const ram = canBoostRam(p, c, boosting);
         const nx = (p.x - c.x) / Math.max(d, .01), ny = (p.y - c.y) / Math.max(d, .01);
         p.x += nx * (39 - d) * .55; p.y += ny * (39 - d) * .55; c.x -= nx * (39 - d) * .45; c.y -= ny * (39 - d) * .45;
-        if (c.cooldown <= 0) {
-          c.hp -= boosting ? 3 : 1; c.cooldown = .8; c.speed *= .4; this.burst(c.x, c.y, boosting ? '#60eaff' : '#ffd39a', boosting ? 28 : 12); this.shake = Math.max(this.shake,boosting ? 8 : 4); this.audio.tone(95, .15, .05, 'sawtooth');
+        if (ram) {
+          c.hp = 0;
+        } else if (c.cooldown <= 0) {
+          c.cooldown = .8; c.speed *= .4; this.burst(c.x, c.y, '#ffd39a', 12); this.shake = Math.max(this.shake, 4); this.audio.tone(95, .15, .05, 'sawtooth');
           if (p.cooldown <= 0) { this.health -= boosting ? 2 : 12; p.cooldown = .65; if (!boosting) p.speed *= .6; }
         }
       }
@@ -1126,9 +1189,10 @@ function createOnlineRanking(options = {}) {
 }
 
 return {createOnlineRanking};})();
-(async()=>{const {createOnlineRanking}=Ranking;const {setupMobile}=Mobile;const {ChaseGame,AudioEngine}=Engine;const {createLocalApi}=Offline;
+(async()=>{const {iconify,wantedStars}=Icons;const {createOnlineRanking}=Ranking;const {setupMobile}=Mobile;const {ChaseGame,AudioEngine}=Engine;const {createLocalApi}=Offline;
 
 const $ = id => document.getElementById(id);
+iconify();
 const format = n => Math.floor(n).toLocaleString('ja-JP');
 const time = s => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 const palette = ['#bcff4a', '#20d9ff', '#ff557d', '#a78bfa', '#ffb347'];
@@ -1154,7 +1218,7 @@ const game = new ChaseGame($('city'), {
     $('reverse-button').setAttribute('aria-pressed', String(h.reverseMode));
     $('drive-mode').textContent=h.reverseMode?'REVERSE':'KM/H';$('drive-mode').classList.toggle('reverse-label',h.reverseMode);
     $('combo').textContent = h.comboTimer > 0 ? `COMBO ×${h.combo}` : '';
-    $('wanted-stars').textContent = Array.from({ length: 5 }, (_, i) => i < h.level ? '★' : '☆').join(' '); $('wanted-text').textContent = `手配 ${h.level} / 追跡 ${h.policeCount}台`;
+    wantedStars($('wanted-stars'), h.level); $('wanted-text').textContent = `手配 ${h.level} / 追跡 ${h.policeCount}台`;
     $('capture-warning').hidden = h.capture < 3; $('capture').value = h.capture;
   },
   onPause: () => { if (!$('pause-dialog').open) $('pause-dialog').showModal(); },
@@ -1167,7 +1231,7 @@ const game = new ChaseGame($('city'), {
 const requestMobileDisplay = setupMobile(game);
 function renderUser() {
   $('identity').textContent = user.displayName; $('identity').hidden = false; $('logout').hidden = false;
-  $('logout').textContent = user.isGuest ? 'ログイン / 登録 ↗' : 'ログアウト ↗';
+  $('logout').textContent = user.isGuest ? 'ログイン / 登録 ↗' : 'ログアウト ↗'; iconify($('logout'));
   $('best-score').textContent = format(user.bestScore); $('best-time').textContent = time(user.longestTime); $('games').textContent = user.games;
   game.color = user.color;
   for (const button of $('colors').children) button.setAttribute('aria-pressed', String(button.dataset.color === user.color));
@@ -1186,7 +1250,7 @@ function authMode(value) {
   $('display-label').hidden = !value; $('password').autocomplete = value ? 'new-password' : 'current-password';
   $('auth-title').textContent = value ? 'あなたの逃走は、ここから。' : 'おかえり、ドライバー。';
   $('auth-description').textContent = value ? '自分だけのアカウントを作ろう。' : 'ガレージにログインして、夜の街へ。';
-  $('auth-submit').textContent = value ? '登録してガレージへ ↗' : 'ログインして始める ↗'; $('auth-error').textContent = '';
+  $('auth-submit').textContent = value ? '登録してガレージへ ↗' : 'ログインして始める ↗'; $('auth-error').textContent = ''; iconify($('auth-submit'));
 }
 $('login-tab').addEventListener('click', () => authMode(false)); $('register-tab').addEventListener('click', () => authMode(true));
 $('auth-form').addEventListener('submit', async e => {
@@ -1259,7 +1323,7 @@ async function saveResult() {
   saving = true; $('retry-save').disabled = true;
   try {
     const result = await api('runs/finish', 'POST', pending); user = result.user; renderUser(); $('result-score').textContent = format(result.score);
-    const localMessage = localService.persistent ? '✓ このブラウザに記録を保存しました。' : '✓ この画面を閉じるまで記録を保持します。';
+    const localMessage = localService.persistent ? 'このブラウザに記録を保存しました。' : 'この画面を閉じるまで記録を保持します。';
     showOnlineState('sending', `${localMessage} オンラインに送信しています。`);
     if (pending.onlineRun) {
       try {
@@ -1288,7 +1352,7 @@ async function refreshHomeStanding() {
 }
 function showOnlineState(state, detail) {
   resultState = state; $('online-result').dataset.state = state;
-  $('online-save-title').textContent = { sending:'オンラインに送信中…', saved:'✓ オンライン送信完了', waiting:'オンライン送信待ち', local:'この端末に保存', rejected:'オンライン送信を確認できません', 'local-error':'端末への保存に失敗' }[state];
+  $('online-save-title').textContent = { sending:'オンラインに送信中…', saved:'オンライン送信完了', waiting:'オンライン送信待ち', local:'この端末に保存', rejected:'オンライン送信を確認できません', 'local-error':'端末への保存に失敗' }[state];
   $('save-state').textContent = detail;
   $('result-online-rank').textContent = { sending:'送信後に確定', saved:'順位を確認中…', waiting:'送信後に確定', local:'オンライン対象外', rejected:'未送信', 'local-error':'未保存' }[state];
 }
@@ -1334,7 +1398,7 @@ async function loadRanking() {
     }
     if (!rows.length) { $('ranking-empty').hidden = false; $('ranking-empty').textContent = 'まだオンライン記録がありません。最初の逃走を決めよう。'; }
     const waiting = onlineRanking.pendingCount(owner);
-    $('ranking-state').textContent = waiting ? `最新の成績を表示 · ${waiting}件の記録はオンライン送信待ちです` : `✓ オンラインの最新記録を表示 · ${new Date().toLocaleTimeString('ja-JP', {hour:'2-digit',minute:'2-digit'})} 更新`;
+    $('ranking-state').textContent = waiting ? `最新の成績を表示 · ${waiting}件の記録はオンライン送信待ちです` : `オンラインの最新記録を表示 · ${new Date().toLocaleTimeString('ja-JP', {hour:'2-digit',minute:'2-digit'})} 更新`;
     $('ranking-state').dataset.state = waiting ? 'waiting' : 'ready';
     if (!resendFailed && !waiting && resultState === 'waiting' && resultOwner === owner.id) { showOnlineState('saved', '送信待ちの記録をランキングに反映しました。'); $('result-online-rank').textContent = rankText(me); }
   } catch (error) {
