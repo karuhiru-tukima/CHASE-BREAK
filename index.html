@@ -90,6 +90,148 @@ html{touch-action:pan-x pan-y;overscroll-behavior:none}body.playing{overflow:hid
 
 .ranking-name-form{margin:14px 0 18px;padding-bottom:14px;border-bottom:1px solid var(--border)}.ranking-name-form label{font-size:12px;color:var(--muted)}.ranking-name-form>div{display:flex;gap:10px;margin-top:8px}.ranking-name-form input{min-width:0;flex:1;background:#0a120d;border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:16px;padding:10px}.ranking-name-form button{padding:10px 16px;white-space:nowrap}#ranking-name-status{margin:5px 0 0;color:var(--lime)}
 
+/* Shared rankings have their own screen; personal results remain separate. */
+.ranking-launch{display:flex;flex-direction:column;gap:6px;text-align:left;width:330px;max-width:100%;margin-top:14px;padding:17px 20px;border:1px solid #a3da62;border-radius:5px;background:#20331beF;color:var(--text)}
+.ranking-launch:hover{background:#2b4321}
+.ranking-launch strong{font-size:1.125rem;color:var(--lime)}
+.ranking-launch>span,.ranking-launch>small{font-size:.875rem;line-height:1.45}
+.ranking-launch>small{color:#b6c9ad}
+body.ranking-open{overflow:hidden}
+.ranking-view{position:fixed;z-index:4;top:92px;bottom:0;left:0;right:0;background:#101913;display:flex;flex-direction:column;gap:16px;padding:24px max(24px,calc((100vw - 1080px)/2));overflow:hidden}
+.ranking-head{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-shrink:0}
+.ranking-head h2{font-size:1.75rem;margin:0 0 6px}
+.ranking-head p{font-size:1rem;color:#b3c3af;margin:0}
+.ranking-head button,.ranking-footer>button{font-size:.875rem;min-height:44px;padding:10px 16px;white-space:nowrap}
+.ranking-self{display:grid;grid-template-columns:1fr 1.4fr 1fr;gap:16px;flex-shrink:0;background:#21351b;border-left:4px solid var(--lime);border-radius:5px;padding:15px 20px}
+.ranking-self>div{display:flex;flex-direction:column;gap:5px;min-width:0}
+.ranking-self span{font-size:.875rem;color:#bdcfb4}
+.ranking-self strong{font-size:1.5rem;font-variant-numeric:tabular-nums;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ranking-self>div:first-child strong{color:var(--lime);font-size:1.875rem}
+.ranking-self small{color:var(--lime);font-size:.8125rem}
+.ranking-state{margin:0;flex-shrink:0;color:#b9cdb0;font-size:.875rem;line-height:1.5}
+.ranking-state[data-state=error],.ranking-state[data-state=waiting]{color:#ffd08d}
+.ranking-table-scroll{min-height:0;flex:1;overflow:auto;overscroll-behavior:contain;scrollbar-color:#5c7850 #152218}
+.ranking-table{width:100%;border-collapse:collapse;font-size:1rem;font-variant-numeric:tabular-nums}
+.ranking-table th{position:sticky;top:0;background:#152218;color:#b9c6b2;text-align:left;font-size:.875rem;font-weight:500}
+.ranking-table th,.ranking-table td{padding:14px 16px;border-bottom:1px solid #ffffff1a}
+.ranking-table th:first-child,.ranking-table td:first-child{width:70px}
+.ranking-table th:nth-child(n+3),.ranking-table td:nth-child(n+3){text-align:right;white-space:nowrap}
+.ranking-table td:nth-child(2){overflow-wrap:anywhere}
+.ranking-mine{background:#263c1c;color:#f1ffe9}
+.ranking-mine td:first-child{color:var(--lime);font-weight:800}
+.ranking-you{display:inline-block;color:var(--lime);font-size:.8125rem;margin-left:8px}
+#ranking-empty{font-size:1rem;line-height:1.7;color:#b9c6b2;padding:20px 10px}
+.ranking-footer{display:grid;grid-template-columns:1fr auto;gap:10px 16px;align-items:start;border-top:1px solid #ffffff25;padding-top:12px;flex-shrink:0}
+.ranking-settings summary{cursor:pointer;font-size:.875rem;min-height:44px;display:flex;align-items:center;color:#d5e2cc}
+.ranking-settings[open]{max-height:165px;overflow:auto;padding-right:6px}
+.ranking-settings .ranking-name-form{margin:0;padding:0;border:0}
+.ranking-settings label{font-size:.875rem}
+.ranking-settings #ranking-name-status{font-size:.8125rem;line-height:1.5}
+.ranking-privacy{grid-column:1/-1;font-size:.8125rem;color:#a2b29a;line-height:1.5;margin:0}
+#result-dialog{width:min(780px,calc(100vw - 32px))}
+.result-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:center}
+.result-performance .result-score{font-size:4rem;margin:8px 0 0}
+.result-performance .score-caption{font-size:.875rem;margin:0 0 12px}
+.result-performance .result-stats{grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+.result-performance .result-stats small{font-size:.8125rem}
+.result-performance .best-badge{font-size:.875rem}
+.online-result{background:#1c2b1b;border:1px solid #ffffff25;border-radius:6px;padding:20px;min-width:0}
+.online-result h3{font-size:1.125rem;line-height:1.4;margin:0 0 12px;color:#d0debe}
+.online-result[data-state=saved] h3{color:var(--lime)}
+.online-result[data-state=waiting] h3{color:#ffd08d}
+.online-result[data-state=rejected] h3,.online-result[data-state=local-error] h3{color:#ffa0a0}
+.online-result #save-state{font-size:.875rem;line-height:1.6;color:#bdcbb7;margin:0}
+.result-online-place{display:flex;flex-direction:column;gap:7px;border-top:1px solid #ffffff25;margin-top:16px;padding-top:14px}
+.result-online-place>span{font-size:.875rem;color:#bdcbb7}
+.result-online-place strong{font-size:1.5rem;color:var(--text)}
+.result-online-place small{font-size:.8125rem;color:#9dae94}
+.result-actions{display:grid;grid-template-columns:1.2fr 1fr;gap:12px;margin-top:20px;align-items:center}
+.result-actions>.secondary{margin:0}
+.result-actions>.text-button{grid-column:1/-1;justify-self:center;font-size:.875rem;min-height:38px}
+@media(max-width:720px){.ranking-view{top:72px}.ranking-head h2{font-size:1.375rem}.ranking-self{gap:10px;padding:12px}.ranking-self strong{font-size:1.125rem}.ranking-self>div:first-child strong{font-size:1.5rem}.ranking-table th,.ranking-table td{padding:12px 9px}}
+@media(orientation:landscape){
+  .touch-layout .ranking-view{top:46px;padding:10px max(18px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left));gap:8px}
+  .touch-layout .ranking-head{gap:8px}
+  .touch-layout .ranking-head h2{font-size:1.25rem;margin-bottom:3px}
+  .touch-layout .ranking-head p{font-size:.875rem}
+  .touch-layout .ranking-head button{padding:6px 10px}
+  .touch-layout .ranking-self{padding:8px 12px;gap:12px;grid-template-columns:1fr 1.3fr 1fr}
+  .touch-layout .ranking-self>div{gap:2px}
+  .touch-layout .ranking-self span{font-size:.8125rem}
+  .touch-layout .ranking-self strong{font-size:1.125rem}
+  .touch-layout .ranking-self>div:first-child strong{font-size:1.375rem}
+  .touch-layout .ranking-self small{display:none}
+  .touch-layout .ranking-state{font-size:.8125rem}
+  .touch-layout .ranking-table{font-size:.875rem}
+  .touch-layout .ranking-table th,.touch-layout .ranking-table td{padding:9px 10px}
+  .touch-layout .ranking-footer{gap:0 12px;padding-top:5px}
+  .touch-layout .ranking-privacy{font-size:.75rem}
+  .touch-layout .ranking-settings[open]{position:absolute;bottom:8px;left:18px;right:18px;z-index:6;background:#18271c;border:1px solid #5c7850;border-radius:6px;max-height:210px;padding:8px 14px;box-shadow:0 10px 40px #0008}
+  .touch-layout .ranking-settings summary{min-height:44px}
+  .touch-layout .ranking-launch{width:100%;max-width:330px;padding:10px 14px;margin-top:8px;gap:3px;flex-shrink:0;min-height:70px}
+  .touch-layout .ranking-launch strong{font-size:1rem}
+  .touch-layout .ranking-launch>span,.touch-layout .ranking-launch>small{font-size:.8125rem;line-height:1.35}
+  .touch-layout .hero .kicker,.touch-layout .hero .tagline{display:none}
+  .touch-layout .hero h1{font-size:clamp(34px,13dvh,54px);margin:3px 0 8px}
+  .touch-layout .start-button{padding:10px 16px;font-size:1rem}
+  .touch-layout .dashboard{grid-template-rows:minmax(0,1fr) minmax(0,1fr)}
+  .touch-layout #result-dialog{padding:16px 20px;max-height:calc(100dvh - 16px)}
+  .touch-layout #result-dialog>.kicker{display:none}
+  .touch-layout #result-dialog>h2{font-size:1.25rem;margin:0 0 10px}
+  .touch-layout .result-layout{gap:16px;align-items:start}
+  .touch-layout .result-performance .result-score{font-size:2.5rem;margin:0}
+  .touch-layout .result-performance .score-caption{font-size:.8125rem;margin:0 0 6px}
+  .touch-layout .result-performance .result-stats{margin:8px 0;gap:7px}
+  .touch-layout .result-performance .result-stats small{font-size:.75rem}
+  .touch-layout .result-performance .result-stats b{font-size:1rem}
+  .touch-layout .online-result{padding:12px}
+  .touch-layout .online-result h3{font-size:1rem;margin-bottom:6px}
+  .touch-layout .online-result #save-state{font-size:.8125rem;line-height:1.45}
+  .touch-layout .result-online-place{margin-top:8px;padding-top:7px;gap:3px}
+  .touch-layout .result-online-place strong{font-size:1.125rem}
+  .touch-layout .result-online-place small{font-size:.75rem}
+  .touch-layout .result-actions{gap:6px 10px;margin-top:10px}
+  .touch-layout .result-actions>.primary,.touch-layout .result-actions>.secondary{font-size:.875rem;padding:10px 8px;min-height:44px}
+  .touch-layout .result-actions>.text-button{padding:4px;min-height:32px}
+}
+@media(max-height:340px) and (orientation:landscape){
+  .touch-layout .ranking-view{top:40px}
+  .touch-layout .hero h1{font-size:clamp(30px,11dvh,40px);margin:0 0 4px}
+  .touch-layout .ranking-launch{min-height:56px;margin-top:5px;padding:7px 11px}
+  .touch-layout .ranking-launch>span{display:none}
+  .touch-layout .start-note{display:none}
+  .touch-layout .ranking-head p,.touch-layout .ranking-privacy{display:none}
+  .touch-layout .ranking-self{padding:6px 10px}
+  .touch-layout .ranking-state{font-size:.75rem}
+  .touch-layout .result-performance .score-caption{display:none}
+  .touch-layout .result-online-place small{display:none}
+  .touch-layout .result-actions>.text-button{min-height:26px}
+}
+@media(max-width:620px){.ranking-time{display:none}.ranking-table th:first-child,.ranking-table td:first-child{width:52px}.ranking-head h2{font-size:1.125rem}}
+@media(orientation:landscape){
+  .touch-layout.ranking-open #header{display:none}
+  .touch-layout .ranking-view{top:0}
+  .touch-layout #result-dialog[open]{display:flex;flex-direction:column;overflow:hidden}
+  .touch-layout #result-dialog>h2,.touch-layout .result-actions{flex-shrink:0}
+  .touch-layout .result-layout{min-height:0;overflow:auto;flex:1 1 auto}
+  .touch-layout .result-performance .result-stats{padding:7px 0;gap:5px}
+  .touch-layout .result-performance .result-stats small{margin-bottom:3px}
+  .touch-layout .result-performance .best-badge{float:right;padding:3px 6px;font-size:.75rem;letter-spacing:0;line-height:1.3;margin-top:4px}
+}
+@media(max-height:340px) and (orientation:landscape){
+  .touch-layout .ranking-state[data-state=ready]{display:none}
+  .touch-layout #result-dialog{padding:12px 16px}
+  .touch-layout .result-online-place small{display:none}
+  .touch-layout .ranking-head p{display:block;font-size:.75rem;line-height:1.2}
+  .touch-layout .ranking-launch>span{display:block}
+}
+@media(max-height:290px) and (orientation:landscape){
+  .touch-layout .ranking-launch>span{display:none}
+  .touch-layout .online-result[data-state=saved] #save-state{display:none}
+  .touch-layout .result-performance .result-stats{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+  .touch-layout .result-performance .result-stats small{font-size:.75rem;white-space:nowrap}
+}
+
 
 .offline-notice{font-size:10px;color:#b6c49e;border:1px solid #bcff4a30;border-radius:4px;background:#182311d9;padding:10px 13px;margin:0 0 23px;line-height:1.6} </style></head>
 <body>
@@ -98,8 +240,8 @@ html{touch-action:pan-x pan-y;overscroll-behavior:none}body.playing{overflow:hid
   <header id="header"><a class="brand" href="./index.html" aria-label="CHASE BREAK ホーム"><span class="brand-icon">〽</span> CHASE<span>BREAK</span><small>STREET PURSUIT</small></a><div class="header-right"><span class="online"><i></i> NIGHT CITY / ONLINE</span><button id="sound" class="icon-button" aria-label="サウンドをオンにする">音 OFF</button><button id="help" class="icon-button">操作方法</button><span id="identity" hidden></span><button id="logout" class="text-button" hidden>ログアウト ↗</button></div></header>
   <main id="garage" hidden><div id="offline-notice" class="offline-notice" role="status"></div>
     <div class="eyebrow"><span class="pill">01</span> MIDNIGHT ESCAPE CLUB</div>
-    <section class="hero"><div class="hero-copy"><p class="kicker">NO BRAKES. NO LIMITS.</p><h1>CHASE<br><span>BREAK<span class="period">.</span></span></h1><p class="tagline">夜を振り切れ。<br>追いつかれたら、そこで終わり。</p><button id="start" class="primary start-button">逃走を開始 <span>↗</span><small>START YOUR ENGINE</small></button><p class="start-note">マウスで移動 · 左でブースト · 右でブレーキ</p></div><div class="vehicle-label"><span class="live-dot"></span> YOUR GETAWAY CAR<p>STREET RUNNER <b>01</b></p><span class="technical">RWD / TURBOCHARGED / NO LIMIT</span></div></section>
-    <section class="dashboard"><article class="panel records"><div class="panel-head"><h2>YOUR RECORD</h2><span>PERSONAL BEST</span></div><div class="score-number" id="best-score">0</div><div class="record-bottom"><span>最長逃走 <b id="best-time">00:00</b></span><span>出走 <b id="games">0</b> 回</span><button id="history-button" class="text-button">履歴を見る ↗</button></div></article><article class="panel customize"><div class="panel-head"><h2>MAKE IT YOURS</h2><span>BODY COLOR</span></div><div id="colors" class="swatches" role="group" aria-label="車のカラー"></div><p id="color-note">カラーはあなたのガレージに保存されます。</p></article><button id="leaderboard-button" class="panel ranking-card"><span class="panel-head"><strong>THE MOST WANTED</strong><span>LEADERBOARD ↗</span></span><span class="ranking-title">街の伝説に、<br>名前を刻め。</span><span class="ranking-note">オンラインランキングを見る →</span></button></section>
+    <section class="hero"><div class="hero-copy"><p class="kicker">NO BRAKES. NO LIMITS.</p><h1>CHASE<br><span>BREAK<span class="period">.</span></span></h1><p class="tagline">夜を振り切れ。<br>追いつかれたら、そこで終わり。</p><button id="start" class="primary start-button">逃走を開始 <span>↗</span><small>START YOUR ENGINE</small></button><button id="leaderboard-button" class="ranking-launch" type="button"><strong>🏆 みんなのランキング</strong><span>スマホもPCも、全プレイヤー共通</span><small id="home-online-summary">走行後の順位と自己ベストを確認</small></button><p class="start-note">マウスで移動 · 左でブースト · 右でブレーキ</p></div><div class="vehicle-label"><span class="live-dot"></span> YOUR GETAWAY CAR<p>STREET RUNNER <b>01</b></p><span class="technical">RWD / TURBOCHARGED / NO LIMIT</span></div></section>
+    <section class="dashboard"><article class="panel records"><div class="panel-head"><h2>この端末の記録</h2><span>PERSONAL BEST</span></div><div class="score-number" id="best-score">0</div><div class="record-bottom"><span>最長逃走 <b id="best-time">00:00</b></span><span>出走 <b id="games">0</b> 回</span><button id="history-button" class="text-button">履歴を見る ↗</button></div></article><article class="panel customize"><div class="panel-head"><h2>MAKE IT YOURS</h2><span>BODY COLOR</span></div><div id="colors" class="swatches" role="group" aria-label="車のカラー"></div><p id="color-note">カラーはあなたのガレージに保存されます。</p></article></section>
     <footer><span>逃げ道は、ひとつじゃない。</span><span><kbd>MOUSE</kbd> DRIVE <kbd>SHIFT 長押し</kbd> REVERSE <kbd>右クリック長押し</kbd> BRAKE <kbd>左クリック長押し</kbd> BOOST <kbd>ESC</kbd> PAUSE</span></footer>
   </main>
   <section id="auth" class="auth-screen" hidden><div class="auth-intro"><p class="kicker">THE CITY IS YOUR PLAYGROUND.</p><h1>CHASE<br><span>BREAK.</span></h1><p>サイレンを背に、<br>まだ見ぬ自己ベストへ。</p><span class="auth-caption">独自アカウントで遊べる、カーチェイス。</span></div><div class="auth-card"><div class="eyebrow">DRIVER ACCESS / 01</div><h2 id="auth-title">おかえり、ドライバー。</h2><p id="auth-description">ガレージにログインして、夜の街へ。</p><div class="tabs"><button id="login-tab" class="active" type="button">ログイン</button><button id="register-tab" type="button">新規登録</button></div><form id="auth-form"><label>ユーザー名<input id="username" name="username" autocomplete="username" pattern="[a-zA-Z0-9_]{3,24}" minlength="3" maxlength="24" placeholder="例：night_driver" required></label><label id="display-label" hidden>表示名<input id="displayName" name="displayName" maxlength="24" placeholder="ランキングに表示される名前"></label><label>パスワード<input id="password" name="password" type="password" autocomplete="current-password" minlength="8" maxlength="128" placeholder="8文字以上" required></label><p id="auth-error" class="error" role="alert"></p><button id="auth-submit" class="primary" type="submit">ログインして始める ↗</button></form><button id="guest-play" class="secondary" type="button">登録せずに遊ぶ →</button><p class="auth-footnote">アカウントと記録は、このブラウザ内だけに保存されます。<br>初めての方は「新規登録」から作成できます。</p></div></section>
@@ -107,8 +249,14 @@ html{touch-action:pan-x pan-y;overscroll-behavior:none}body.playing{overflow:hid
   <aside id="rotate-notice" role="status"><span>↻</span><h2>スマホを横向きにしてね</h2><p>左スティックで移動。右のボタンでブレーキ・ブースト。<br>Rをタップするとバックに切り替わります。</p></aside><div id="loading">エンジンを準備しています…</div>
   <dialog id="help-dialog"><button class="close-dialog" aria-label="閉じる">×</button><p class="kicker">DRIVER'S MANUAL</p><h2>街を、味方につけろ。</h2><div class="control-list"><p><kbd>マウス</kbd><span>カーソルの方向へ自動で走る</span></p><p><kbd>右クリック長押し</kbd><span>ブレーキ・停止</span></p><p><kbd>W A S D / 矢印キー</kbd><span>キーボード操作にも切り替え可</span></p><p><kbd>左クリック長押し / SPACE</kbd><span>ブーストで包囲を突破</span></p><p><kbd>SHIFT 長押し</kbd><span>バック（ブーストで前進に切り替え）</span></p><p><kbd>ESC</kbd><span>一時停止</span></p></div><p class="muted">スマホは横画面。左スティックを動かして走行し、BRAKE・BOOSTは長押し。Rはタップでバックを切り替え、ブーストすると前進に戻ります。</p><p class="muted">近くをすり抜けるとニアミスボーナス。パトカーを建物へ誘い込むと追跡不能に。続けて決めると最大5倍のコンボ！</p><p class="muted">ブーストが空になると35％回復するまで再使用できません。緑の＋は修理、青い稲妻はブースト回復。耐久値が0、または低速で包囲されると終了です。</p><button class="primary close-dialog">了解、走ろう。</button></dialog>
   <dialog id="pause-dialog"><p class="pause-rotate">↻ スマホを横向きにしてね</p><p class="kicker">TAKE A BREATH</p><h2>まだ、逃げられる。</h2><p class="muted">一時停止中は逃走時間も止まります。</p><button id="resume" class="primary">逃走を続ける →</button><button id="abandon" class="secondary">今回の逃走をやめる</button><p class="muted small">中断したプレイの記録は保存されません。</p></dialog>
-  <dialog id="result-dialog"><p class="kicker" id="result-type">END OF THE CHASE</p><h2 id="result-title">追跡終了。</h2><div id="new-best" class="best-badge" hidden>↗ NEW PERSONAL BEST</div><div class="result-score" id="result-score">0</div><p class="score-caption">TOTAL SCORE</p><div class="result-stats"><div><small>逃走時間</small><b id="result-time"></b></div><div><small>ニアミス</small><b id="result-near"></b></div><div><small>追跡不能</small><b id="result-destroyed"></b></div><div><small>最大倍率</small><b id="result-combo"></b></div></div><p id="save-state" role="status"></p><button id="retry-save" class="secondary" hidden>記録の保存を再試行</button><button id="retry" class="primary">もう一度、振り切れ。 ↗</button><button id="back-garage" class="secondary">ガレージに戻る</button></dialog>
-  <dialog id="leaderboard-dialog"><button class="close-dialog" aria-label="閉じる">×</button><p class="kicker">THE MOST WANTED</p><h2>オンラインランキング</h2><p class="muted">みんなの自己ベスト TOP 30。表示名と自己ベストを公開します。過去の端末内記録は送信せず、この版で開始した走行から集計します。</p><form id="ranking-name-form" class="ranking-name-form"><label for="ranking-name">ランキングで使う表示名</label><div><input id="ranking-name" maxlength="24" required autocomplete="nickname"><button id="ranking-name-save" class="icon-button" type="submit">保存</button></div><p id="ranking-name-status" class="small" role="status"></p></form><div id="leaderboard-list"></div></dialog>
+  <dialog id="result-dialog"><p class="kicker" id="result-type">END OF THE CHASE</p><h2 id="result-title">追跡終了。</h2><div class="result-layout"><section class="result-performance" aria-label="今回の逃走結果"><div id="new-best" class="best-badge" hidden>自己ベスト更新！</div><div class="result-score" id="result-score">0</div><p class="score-caption">今回のスコア</p><div class="result-stats"><div><small>逃走時間</small><b id="result-time"></b></div><div><small>ニアミス</small><b id="result-near"></b></div><div><small>追跡不能</small><b id="result-destroyed"></b></div><div><small>最大倍率</small><b id="result-combo"></b></div></div></section><section id="online-result" class="online-result" data-state="sending" aria-live="polite"><h3 id="online-save-title">オンラインに送信中…</h3><p id="save-state">端末への保存を準備しています。</p><div class="result-online-place"><span>あなたの順位</span><strong id="result-online-rank">送信後に確定</strong><small>全プレイヤー共通の自己ベスト順位</small></div></section></div><button id="retry-save" class="secondary" hidden>端末への保存を再試行</button><div class="result-actions"><button id="result-ranking-button" class="primary">ランキングで確認する</button><button id="retry" class="secondary">もう一度逃走する</button><button id="back-garage" class="text-button">ホームへ戻る</button></div></dialog>
+  <section id="ranking-screen" class="ranking-view" aria-labelledby="ranking-title" hidden>
+    <div class="ranking-head"><div><h2 id="ranking-title" tabindex="-1">🏆 みんなのランキング</h2><p>全プレイヤー共通 · 自己ベスト TOP 30</p></div><button id="ranking-back" class="icon-button" type="button">ホームへ戻る</button></div>
+    <div class="ranking-self" aria-label="あなたのオンライン成績"><div><span>あなたの順位</span><strong id="ranking-my-rank">確認中…</strong></div><div><span>オンライン自己ベスト</span><strong id="ranking-my-score">—</strong></div><div><span>公開する名前</span><strong id="ranking-my-name">—</strong><small>あなた</small></div></div>
+    <p id="ranking-state" class="ranking-state" role="status">オンラインの記録を読み込んでいます…</p>
+    <div class="ranking-table-scroll" role="region" aria-label="全員の自己ベスト一覧"><table class="ranking-table"><thead><tr><th scope="col">順位</th><th scope="col">ドライバー</th><th scope="col">自己ベスト</th><th scope="col" class="ranking-time">最長逃走</th></tr></thead><tbody id="leaderboard-list"></tbody></table><p id="ranking-empty" hidden></p></div>
+    <div class="ranking-footer"><details class="ranking-settings"><summary>公開する表示名を変更</summary><form id="ranking-name-form" class="ranking-name-form"><label for="ranking-name">ランキングで使う表示名</label><div><input id="ranking-name" maxlength="24" required autocomplete="nickname"><button id="ranking-name-save" class="icon-button" type="submit">保存</button></div><p id="ranking-name-status" role="status"></p></form></details><button id="ranking-refresh" class="icon-button" type="button">最新に更新</button><p class="ranking-privacy">公開されるのは表示名と成績。パスワード・個人の履歴は端末内に保存します。</p></div>
+  </section>
   <dialog id="history-dialog"><button class="close-dialog" aria-label="閉じる">×</button><p class="kicker">YOUR FOOTPRINT</p><h2>あなたの逃走記録</h2><p class="muted">あなただけに表示される、直近12回の記録。</p><div id="history-list"></div></dialog>
   <div id="toast" role="status" hidden></div>
 <script>"use strict";
@@ -948,8 +1096,15 @@ function createOnlineRanking(options = {}) {
       throw error;
     }
   };
+  const standing = async user => {
+    const player = read().players[user.id];
+    if (!player) return { id: null, displayName: user.isGuest ? `ドライバー-${user.id.slice(0,6).toUpperCase()}` : user.displayName, rank: null, score: 0, longestTime: 0, games: 0 };
+    return (await request('/me', 'GET', undefined, player.token)).me;
+  };
   return {
     playerFor: user => read().players[user.id],
+    standing,
+    pendingCount: user => read().pending.filter(p => p.run.owner === user.id).length,
     async start(user) {
       const player = await ensure(user);
       const run = await request('/runs', 'POST', {}, player.token);
@@ -962,7 +1117,7 @@ function createOnlineRanking(options = {}) {
       write(db); return send(item);
     },
     async flush(user) { for (const item of read().pending.filter(p => p.run.owner === user.id)) await send(item); },
-    async leaderboard(user) { const data = await request('/leaderboard'), mine = read().players[user.id]?.id; return { rows: data.rows.map(row => ({ ...row, mine: row.id === mine })) }; },
+    async leaderboard(user) { const [data, me] = await Promise.all([request('/leaderboard'), standing(user)]), mine = read().players[user.id]?.id; return { rows: data.rows.map(row => ({ ...row, mine: row.id === mine })), me }; },
     async rename(user, displayName) {
       const player = await ensure(user), result = await request('/player', 'PATCH', { displayName }, player.token);
       const db = read(); db.players[user.id] = { ...player, displayName: result.displayName }; write(db); return result;
@@ -983,6 +1138,8 @@ const audio = new AudioEngine();
 const localService = createLocalApi();
 const onlineRanking = createOnlineRanking();
 let onlineRun = null;
+let rankingRequest = 0, resultState = 'sending', resultOwner = null;
+const onlineStandings = new Map();
 async function api(route, method = 'GET', body) {
   return localService.request(route, method, body);
 }
@@ -1016,9 +1173,12 @@ function renderUser() {
   for (const button of $('colors').children) button.setAttribute('aria-pressed', String(button.dataset.color === user.color));
 }
 function garage() {
+  $('ranking-screen').hidden = true; document.body.classList.remove('ranking-open');
   document.body.classList.remove('playing'); $('garage').hidden = false; $('auth').hidden = true; $('hud').hidden = true; game.garage(); renderUser(); window.scrollTo(0, 0);
+  refreshHomeStanding();
 }
 function showAuth() {
+  $('ranking-screen').hidden = true; document.body.classList.remove('ranking-open'); rankingRequest++;
   user = null; game.garage(); document.body.classList.remove('playing'); $('auth').hidden = false; $('garage').hidden = true; $('hud').hidden = true; $('identity').hidden = true; $('logout').hidden = true; window.scrollTo(0, 0);
 }
 function authMode(value) {
@@ -1090,7 +1250,8 @@ function showResult(result) {
   $('result-type').textContent = result.reason === 'busted' ? 'BUSTED / END OF THE CHASE' : 'WRECKED / END OF THE CHASE';
   $('result-score').textContent = format(result.score); $('result-time').textContent = time(result.seconds); $('result-near').textContent = result.nearMisses; $('result-destroyed').textContent = result.destroyed; $('result-combo').textContent = `×${result.maxCombo}`;
   $('new-best').hidden = result.score <= user.bestScore; $('retry-save').hidden = true; $('retry').disabled = true; $('back-garage').disabled = true;
-  $('save-state').textContent = '記録を保存しています…';
+  resultOwner = result.userId; $('result-ranking-button').disabled = true;
+  showOnlineState('sending', '端末への保存を準備しています。');
   if (!$('result-dialog').open) $('result-dialog').showModal();
 }
 async function saveResult() {
@@ -1099,16 +1260,37 @@ async function saveResult() {
   try {
     const result = await api('runs/finish', 'POST', pending); user = result.user; renderUser(); $('result-score').textContent = format(result.score);
     const localMessage = localService.persistent ? '✓ このブラウザに記録を保存しました。' : '✓ この画面を閉じるまで記録を保持します。';
-    $('save-state').textContent = localMessage;
+    showOnlineState('sending', `${localMessage} オンラインに送信しています。`);
     if (pending.onlineRun) {
-      try { await onlineRanking.finish(pending.onlineRun, pending); $('save-state').textContent = '✓ 端末への保存・オンラインランキングへの送信が完了しました。'; }
-      catch (error) { $('save-state').textContent = [400,401,404].includes(error.status) ? `${localMessage} オンライン記録は受け付けられませんでした。` : `${localMessage} オンライン送信待ちです。ランキングを開くと再送します。`; }
-    } else $('save-state').textContent = `${localMessage} この走行はオンライン対象外です。`;
+      try {
+        await onlineRanking.finish(pending.onlineRun, pending);
+        showOnlineState('saved', 'ランキングに反映済み。端末にも保存しました。');
+        try { const me = await onlineRanking.standing(user); rememberStanding(me); $('result-online-rank').textContent = rankText(me); } catch { $('result-online-rank').textContent = 'ランキングで確認'; }
+      } catch (error) { showOnlineState([400,401,404].includes(error.status) ? 'rejected' : 'waiting', [400,401,404].includes(error.status) ? `${localMessage} ${error.message}` : '端末の記録は保存済みです。通信が戻るか、ランキングを開くと再送します。'); }
+    } else showOnlineState('local', `${localMessage} オフラインで始めた走行はランキングには送信されません。`);
     pending = null;
     try { sessionStorage.removeItem('chase-unsaved'); } catch { /* Optional recovery cache. */ }
     $('retry-save').hidden = true; $('retry').disabled = false; $('back-garage').disabled = false;
-  } catch (e) { $('save-state').textContent = `未保存：${e.message} この画面を残して再試行してください。`; $('retry-save').hidden = false; }
-  finally { saving = false; $('retry-save').disabled = false; }
+  } catch (e) { showOnlineState('local-error', `未保存：${e.message} この画面を残して再試行してください。`); $('retry-save').hidden = false; }
+  finally { saving = false; $('retry-save').disabled = false; $('result-ranking-button').disabled = false; }
+}
+function rankText(me) { return Number.isSafeInteger(me?.rank) && me.rank > 0 ? `${format(me.rank)}位` : 'まだ順位なし'; }
+function rememberStanding(me) {
+  onlineStandings.set(user.id, me);
+  $('home-online-summary').textContent = me.rank ? `あなた ${rankText(me)} · 自己ベスト ${format(me.score)}点` : '走行結果を送信すると順位がつきます';
+}
+async function refreshHomeStanding() {
+  const owner = user; if (!owner) return;
+  const previous = onlineStandings.get(owner.id); if (previous) rememberStanding(previous);
+  else $('home-online-summary').textContent = 'オンラインの順位を確認中…';
+  try { const me = await onlineRanking.standing(owner); if (user?.id === owner.id) rememberStanding(me); }
+  catch { if (user?.id === owner.id) $('home-online-summary').textContent = '接続を確認して順位を見る'; }
+}
+function showOnlineState(state, detail) {
+  resultState = state; $('online-result').dataset.state = state;
+  $('online-save-title').textContent = { sending:'オンラインに送信中…', saved:'✓ オンライン送信完了', waiting:'オンライン送信待ち', local:'この端末に保存', rejected:'オンライン送信を確認できません', 'local-error':'端末への保存に失敗' }[state];
+  $('save-state').textContent = detail;
+  $('result-online-rank').textContent = { sending:'送信後に確定', saved:'順位を確認中…', waiting:'送信後に確定', local:'オンライン対象外', rejected:'未送信', 'local-error':'未保存' }[state];
 }
 function restorePending() {
   try { const item = JSON.parse(sessionStorage.getItem('chase-unsaved')); if (item && item.userId === user.id) { pending = item; showResult(item); saveResult(); } } catch { /* Ignore an unavailable or damaged recovery cache. */ }
@@ -1122,16 +1304,62 @@ function listRow(rank, title, subtitle, score, mine = false) {
   const total = document.createElement('strong'); total.textContent = format(score); row.append(copy, total); return row;
 }
 function empty(list, text) { const p = document.createElement('p'); p.className = 'empty'; p.textContent = text; list.append(p); }
-$('leaderboard-button').addEventListener('click', async () => {
-  $('leaderboard-list').replaceChildren(); empty($('leaderboard-list'), '読み込んでいます…'); $('leaderboard-dialog').showModal();
-  $('ranking-name').value = onlineRanking.playerFor(user)?.displayName || (user.isGuest ? `ドライバー-${user.id.slice(0,6).toUpperCase()}` : user.displayName);
-  $('ranking-name-status').textContent = '';
-  try { await onlineRanking.flush(user); const { rows } = await onlineRanking.leaderboard(user); $('leaderboard-list').replaceChildren(); if (!rows.length) empty($('leaderboard-list'), 'まだオンライン記録がありません。最初の逃走を決めよう。'); rows.forEach((r, i) => $('leaderboard-list').append(listRow(i + 1, r.displayName + (r.mine ? ' 〈あなた〉' : ''), `最長逃走 ${time(r.longestTime)}`, r.score, r.mine))); }
-  catch (e) { $('leaderboard-list').replaceChildren(); empty($('leaderboard-list'), e.message); }
+async function openRanking() {
+  if (!user) return;
+  for (const dialog of document.querySelectorAll('dialog[open]')) dialog.close();
+  game.garage(); $('garage').hidden = true; $('hud').hidden = true; document.body.classList.remove('playing'); document.body.classList.add('ranking-open'); $('ranking-screen').hidden = false;
+  $('ranking-name-status').textContent = ''; window.scrollTo(0, 0); $('ranking-title').focus();
+  await loadRanking();
+}
+async function loadRanking() {
+  const owner = user, request = ++rankingRequest; if (!owner) return;
+  const current = () => user?.id === owner.id && request === rankingRequest;
+  $('ranking-refresh').disabled = true; $('leaderboard-list').replaceChildren(); $('ranking-empty').hidden = true;
+  $('ranking-state').textContent = 'オンラインの最新記録を読み込んでいます…'; $('ranking-state').dataset.state = 'loading';
+  $('ranking-my-rank').textContent = '確認中…'; $('ranking-my-score').textContent = '—'; $('ranking-my-name').textContent = '—';
+  try {
+    let resendFailed = false;
+    try { await onlineRanking.flush(owner); } catch { resendFailed = true; }
+    const { rows, me } = await onlineRanking.leaderboard(owner); if (!current()) return;
+    rememberStanding(me);
+    $('ranking-my-rank').textContent = rankText(me); $('ranking-my-score').textContent = `${format(me.score)}点`; $('ranking-my-name').textContent = me.displayName; $('ranking-name').value = me.displayName;
+    for (const [i, row] of rows.entries()) {
+      const tr = document.createElement('tr'); if (row.mine) tr.className = 'ranking-mine';
+      for (const [index, value] of [String(i + 1), row.displayName, `${format(row.score)}点`, time(row.longestTime)].entries()) {
+        const td = document.createElement('td'); td.textContent = value;
+        if (index === 1 && row.mine) { const badge = document.createElement('span'); badge.className = 'ranking-you'; badge.textContent = 'あなた'; td.append(badge); }
+        if (index === 3) td.className = 'ranking-time'; tr.append(td);
+      }
+      $('leaderboard-list').append(tr);
+    }
+    if (!rows.length) { $('ranking-empty').hidden = false; $('ranking-empty').textContent = 'まだオンライン記録がありません。最初の逃走を決めよう。'; }
+    const waiting = onlineRanking.pendingCount(owner);
+    $('ranking-state').textContent = waiting ? `最新の成績を表示 · ${waiting}件の記録はオンライン送信待ちです` : `✓ オンラインの最新記録を表示 · ${new Date().toLocaleTimeString('ja-JP', {hour:'2-digit',minute:'2-digit'})} 更新`;
+    $('ranking-state').dataset.state = waiting ? 'waiting' : 'ready';
+    if (!resendFailed && !waiting && resultState === 'waiting' && resultOwner === owner.id) { showOnlineState('saved', '送信待ちの記録をランキングに反映しました。'); $('result-online-rank').textContent = rankText(me); }
+  } catch (error) {
+    if (!current()) return;
+    $('ranking-my-rank').textContent = '取得できません'; $('ranking-my-score').textContent = '—';
+    $('ranking-my-name').textContent = onlineRanking.playerFor(owner)?.displayName || owner.displayName;
+    $('ranking-name').value = onlineRanking.playerFor(owner)?.displayName || (owner.isGuest ? `ドライバー-${owner.id.slice(0,6).toUpperCase()}` : owner.displayName);
+    $('ranking-state').textContent = 'オンラインに接続できません。「最新に更新」で再試行してください。'; $('ranking-state').dataset.state = 'error';
+    $('ranking-empty').hidden = false; $('ranking-empty').textContent = error.message;
+  } finally { if (current()) $('ranking-refresh').disabled = false; }
+}
+$('leaderboard-button').addEventListener('click', openRanking);
+$('result-ranking-button').addEventListener('click', openRanking);
+$('ranking-back').addEventListener('click', () => { rankingRequest++; garage(); });
+$('ranking-refresh').addEventListener('click', loadRanking);
+window.addEventListener('keydown', e => { if (e.code === 'Escape' && !$('ranking-screen').hidden) { e.preventDefault(); rankingRequest++; garage(); } });
+window.addEventListener('online', async () => {
+  if (!user) return;
+  if (!$('ranking-screen').hidden) { loadRanking(); return; }
+  const owner = user;
+  try { await onlineRanking.flush(owner); const me = await onlineRanking.standing(owner); if (user?.id !== owner.id) return; rememberStanding(me); if (resultState === 'waiting' && resultOwner === owner.id && !onlineRanking.pendingCount(owner)) { showOnlineState('saved', '通信が戻り、ランキングに反映しました。'); $('result-online-rank').textContent = rankText(me); } } catch { /* Pending results stay stored for another attempt. */ }
 });
 $('ranking-name-form').addEventListener('submit', async e => {
   e.preventDefault(); $('ranking-name-save').disabled = true; $('ranking-name-status').textContent = '保存しています…';
-  try { await onlineRanking.rename(user, $('ranking-name').value.trim()); $('ranking-name-status').textContent = '表示名を保存しました。'; $('leaderboard-button').click(); }
+  try { await onlineRanking.rename(user, $('ranking-name').value.trim()); $('ranking-name-status').textContent = '表示名を保存しました。'; await loadRanking(); }
   catch (error) { $('ranking-name-status').textContent = error.message; }
   finally { $('ranking-name-save').disabled = false; }
 });
