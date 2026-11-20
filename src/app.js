@@ -1,9 +1,11 @@
+import { iconify, wantedStars } from './ui-icons.mjs';
 import { ChaseGame, AudioEngine } from './game.js';
 import { createLocalApi } from './offline-auth.mjs';
 import { setupMobile } from './mobile-controls.mjs';
 import { createOnlineRanking } from './online-ranking.mjs';
 
 const $ = id => document.getElementById(id);
+iconify();
 const format = n => Math.floor(n).toLocaleString('ja-JP');
 const time = s => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 const palette = ['#bcff4a', '#20d9ff', '#ff557d', '#a78bfa', '#ffb347'];
@@ -29,7 +31,7 @@ const game = new ChaseGame($('city'), {
     $('reverse-button').setAttribute('aria-pressed', String(h.reverseMode));
     $('drive-mode').textContent=h.reverseMode?'REVERSE':'KM/H';$('drive-mode').classList.toggle('reverse-label',h.reverseMode);
     $('combo').textContent = h.comboTimer > 0 ? `COMBO ×${h.combo}` : '';
-    $('wanted-stars').textContent = Array.from({ length: 5 }, (_, i) => i < h.level ? '★' : '☆').join(' '); $('wanted-text').textContent = `手配 ${h.level} / 追跡 ${h.policeCount}台`;
+    wantedStars($('wanted-stars'), h.level); $('wanted-text').textContent = `手配 ${h.level} / 追跡 ${h.policeCount}台`;
     $('capture-warning').hidden = h.capture < 3; $('capture').value = h.capture;
   },
   onPause: () => { if (!$('pause-dialog').open) $('pause-dialog').showModal(); },
@@ -42,7 +44,7 @@ const game = new ChaseGame($('city'), {
 const requestMobileDisplay = setupMobile(game);
 function renderUser() {
   $('identity').textContent = user.displayName; $('identity').hidden = false; $('logout').hidden = false;
-  $('logout').textContent = user.isGuest ? 'ログイン / 登録 ↗' : 'ログアウト ↗';
+  $('logout').textContent = user.isGuest ? 'ログイン / 登録 ↗' : 'ログアウト ↗'; iconify($('logout'));
   $('best-score').textContent = format(user.bestScore); $('best-time').textContent = time(user.longestTime); $('games').textContent = user.games;
   game.color = user.color;
   for (const button of $('colors').children) button.setAttribute('aria-pressed', String(button.dataset.color === user.color));
@@ -61,7 +63,7 @@ function authMode(value) {
   $('display-label').hidden = !value; $('password').autocomplete = value ? 'new-password' : 'current-password';
   $('auth-title').textContent = value ? 'あなたの逃走は、ここから。' : 'おかえり、ドライバー。';
   $('auth-description').textContent = value ? '自分だけのアカウントを作ろう。' : 'ガレージにログインして、夜の街へ。';
-  $('auth-submit').textContent = value ? '登録してガレージへ ↗' : 'ログインして始める ↗'; $('auth-error').textContent = '';
+  $('auth-submit').textContent = value ? '登録してガレージへ ↗' : 'ログインして始める ↗'; $('auth-error').textContent = ''; iconify($('auth-submit'));
 }
 $('login-tab').addEventListener('click', () => authMode(false)); $('register-tab').addEventListener('click', () => authMode(true));
 $('auth-form').addEventListener('submit', async e => {
@@ -134,7 +136,7 @@ async function saveResult() {
   saving = true; $('retry-save').disabled = true;
   try {
     const result = await api('runs/finish', 'POST', pending); user = result.user; renderUser(); $('result-score').textContent = format(result.score);
-    const localMessage = localService.persistent ? '✓ このブラウザに記録を保存しました。' : '✓ この画面を閉じるまで記録を保持します。';
+    const localMessage = localService.persistent ? 'このブラウザに記録を保存しました。' : 'この画面を閉じるまで記録を保持します。';
     showOnlineState('sending', `${localMessage} オンラインに送信しています。`);
     if (pending.onlineRun) {
       try {
@@ -163,7 +165,7 @@ async function refreshHomeStanding() {
 }
 function showOnlineState(state, detail) {
   resultState = state; $('online-result').dataset.state = state;
-  $('online-save-title').textContent = { sending:'オンラインに送信中…', saved:'✓ オンライン送信完了', waiting:'オンライン送信待ち', local:'この端末に保存', rejected:'オンライン送信を確認できません', 'local-error':'端末への保存に失敗' }[state];
+  $('online-save-title').textContent = { sending:'オンラインに送信中…', saved:'オンライン送信完了', waiting:'オンライン送信待ち', local:'この端末に保存', rejected:'オンライン送信を確認できません', 'local-error':'端末への保存に失敗' }[state];
   $('save-state').textContent = detail;
   $('result-online-rank').textContent = { sending:'送信後に確定', saved:'順位を確認中…', waiting:'送信後に確定', local:'オンライン対象外', rejected:'未送信', 'local-error':'未保存' }[state];
 }
@@ -209,7 +211,7 @@ async function loadRanking() {
     }
     if (!rows.length) { $('ranking-empty').hidden = false; $('ranking-empty').textContent = 'まだオンライン記録がありません。最初の逃走を決めよう。'; }
     const waiting = onlineRanking.pendingCount(owner);
-    $('ranking-state').textContent = waiting ? `最新の成績を表示 · ${waiting}件の記録はオンライン送信待ちです` : `✓ オンラインの最新記録を表示 · ${new Date().toLocaleTimeString('ja-JP', {hour:'2-digit',minute:'2-digit'})} 更新`;
+    $('ranking-state').textContent = waiting ? `最新の成績を表示 · ${waiting}件の記録はオンライン送信待ちです` : `オンラインの最新記録を表示 · ${new Date().toLocaleTimeString('ja-JP', {hour:'2-digit',minute:'2-digit'})} 更新`;
     $('ranking-state').dataset.state = waiting ? 'waiting' : 'ready';
     if (!resendFailed && !waiting && resultState === 'waiting' && resultOwner === owner.id) { showOnlineState('saved', '送信待ちの記録をランキングに反映しました。'); $('result-online-rank').textContent = rankText(me); }
   } catch (error) {

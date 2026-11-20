@@ -9,6 +9,17 @@ const angleDiff = (a, b) => Math.atan2(Math.sin(b - a), Math.cos(b - a));
 const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 const rand = (a, b) => a + Math.random() * (b - a);
 
+export const RAM_MIN_KMH = 300;
+export function canBoostRam(player, car, boosting) {
+  if (!boosting) return false;
+  const fx = Math.cos(player.angle), fy = Math.sin(player.angle);
+  if ((player.vx * fx + player.vy * fy) * .65 < RAM_MIN_KMH) return false;
+  const dx = car.x - player.x, dy = car.y - player.y, distance = Math.hypot(dx, dy);
+  if (distance <= .01 || distance >= 39 || dx * fx + dy * fy < distance * .5) return false;
+  const cvx = Math.cos(car.angle || 0) * (car.speed || 0), cvy = Math.sin(car.angle || 0) * (car.speed || 0);
+  return (player.vx - cvx) * dx + (player.vy - cvy) * dy > 0;
+}
+
 export function circleRect(x, y, radius, rect) {
   const reach=(rect.w+rect.h)*.5+radius;
   if(Math.abs(x-rect.x-rect.w/2)>reach||Math.abs(y-rect.y-rect.h/2)>reach)return null;
@@ -266,10 +277,13 @@ export class ChaseGame {
       if (d > 140 && c.near) { if (!c.nearHit && c.nearSpeed > 145) this.event('near'); c.near = false; c.nearCooldown = 3; }
       if (d < 39) {
         c.nearHit = true;
+        const ram = canBoostRam(p, c, boosting);
         const nx = (p.x - c.x) / Math.max(d, .01), ny = (p.y - c.y) / Math.max(d, .01);
         p.x += nx * (39 - d) * .55; p.y += ny * (39 - d) * .55; c.x -= nx * (39 - d) * .45; c.y -= ny * (39 - d) * .45;
-        if (c.cooldown <= 0) {
-          c.hp -= boosting ? 3 : 1; c.cooldown = .8; c.speed *= .4; this.burst(c.x, c.y, boosting ? '#60eaff' : '#ffd39a', boosting ? 28 : 12); this.shake = Math.max(this.shake,boosting ? 8 : 4); this.audio.tone(95, .15, .05, 'sawtooth');
+        if (ram) {
+          c.hp = 0;
+        } else if (c.cooldown <= 0) {
+          c.cooldown = .8; c.speed *= .4; this.burst(c.x, c.y, '#ffd39a', 12); this.shake = Math.max(this.shake, 4); this.audio.tone(95, .15, .05, 'sawtooth');
           if (p.cooldown <= 0) { this.health -= boosting ? 2 : 12; p.cooldown = .65; if (!boosting) p.speed *= .6; }
         }
       }
