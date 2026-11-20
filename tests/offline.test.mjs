@@ -60,7 +60,7 @@ test('damaged stored data is preserved; guest can still play', async () => {
 test('single HTML embeds everything and its classic script parses without imports', async () => {
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
   assert.doesNotMatch(html, /<script[^>]+src=|<link[^>]+rel="stylesheet"|type="module"|fetch\(/);
-  assert.match(html, /data:image\/svg\+xml/); assert.match(html, /登録せずに遊ぶ/);
+  assert.match(html, /data:image\/png;base64,/); assert.match(html, /登録せずに遊ぶ/);
   const script = html.match(/<script>([\s\S]*?)<\/script>/)[1];
   assert.doesNotMatch(script, /^import |^export /m); new vm.Script(script);
 });
