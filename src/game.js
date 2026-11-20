@@ -11,28 +11,37 @@ const rand = (a, b) => a + Math.random() * (b - a);
 
 export const RAM_MIN_KMH = 250;
 export function boostAcceleration(speedKmh) {
-  return 420 * (1 + .4 * clamp((200 - Math.max(0, speedKmh)) / 200, 0, 1));
+  return 420 * (1 + .8 * clamp((200 - Math.max(0, speedKmh)) / 200, 0, 1));
 }
 
-export function movePatrol(car, desired, dt) {
+export function movePatrol(car, desired, dt, chasing = true) {
   // Steering takes time to build; fast patrols carry momentum through a turn.
-  const turnLimit = lerp(3.4, 1.7, clamp(car.speed / 320, 0, 1));
+  const turnLimit = chasing ? lerp(3.4, 1.7, clamp(car.speed / 320, 0, 1)) : 3.8;
   const requestedTurn = clamp(angleDiff(car.angle, desired) * 2.8, -turnLimit, turnLimit);
-  car.turnRate = lerp(car.turnRate || 0, requestedTurn, 1 - Math.exp(-4 * dt));
+  car.turnRate = lerp(car.turnRate || 0, requestedTurn, 1 - Math.exp(-(chasing ? 4 : 9) * dt));
   const vx = car.vx ?? Math.cos(car.angle) * car.speed;
   const vy = car.vy ?? Math.sin(car.angle) * car.speed;
   car.angle += car.turnRate * dt;
-  const grip = 1 - Math.exp(-lerp(5, 2.1, clamp(car.speed / 320, 0, 1)) * dt);
+  const grip = 1 - Math.exp(-(chasing ? lerp(5, 2.1, clamp(car.speed / 320, 0, 1)) : 9) * dt);
   car.vx = lerp(vx, Math.cos(car.angle) * car.speed, grip);
   car.vy = lerp(vy, Math.sin(car.angle) * car.speed, grip);
   car.x += car.vx * dt; car.y += car.vy * dt;
 }
+
+export function explosionFeedback(car, player, camera, width, height) {
+  const x = (car.x - camera.x) * camera.zoom, y = (car.y - camera.y) * camera.zoom;
+  if (Math.abs(x) > width / 2 + 50 || Math.abs(y) > height / 2 + 50) return 0;
+  return clamp((700 - dist(car, player)) / 400, 0, 1);
+}
+export function isFrontContact(player, car) {
+  const dx = car.x - player.x, dy = car.y - player.y, distance = Math.hypot(dx, dy);
+  return distance > .01 && distance < 39 && dx * Math.cos(player.angle) + dy * Math.sin(player.angle) >= distance * .5;
+}
 export function canBoostRam(player, car, boosting) {
-  if (!boosting) return false;
+  if (!boosting || !isFrontContact(player, car)) return false;
   const fx = Math.cos(player.angle), fy = Math.sin(player.angle);
   if ((player.vx * fx + player.vy * fy) * .65 < RAM_MIN_KMH) return false;
-  const dx = car.x - player.x, dy = car.y - player.y, distance = Math.hypot(dx, dy);
-  if (distance <= .01 || distance >= 39 || dx * fx + dy * fy < distance * .5) return false;
+  const dx = car.x - player.x, dy = car.y - player.y;
   const cvx = car.vx ?? Math.cos(car.angle || 0) * (car.speed || 0), cvy = car.vy ?? Math.sin(car.angle || 0) * (car.speed || 0);
   return (player.vx - cvx) * dx + (player.vy - cvy) * dy > 0;
 }
@@ -102,11 +111,11 @@ export class AudioEngine {
     o.type = type; o.frequency.setValueAtTime(freq, now); o.frequency.exponentialRampToValueAtTime(Math.max(30, freq * .45), now + duration);
     g.gain.setValueAtTime(volume, now); g.gain.exponentialRampToValueAtTime(.0001, now + duration); o.connect(g).connect(this.context.destination); o.start(); o.stop(now + duration);
   }
-  explosion() {
+  explosion(strength = 1) {
     if(!this.enabled||!this.context)return;
     const c=this.context,now=c.currentTime,buffer=c.createBuffer(1,Math.floor(c.sampleRate*.85),c.sampleRate),data=buffer.getChannelData(0);
     for(let i=0;i<data.length;i++)data[i]=(Math.random()*2-1)*Math.pow(1-i/data.length,2);
-    const source=c.createBufferSource(),filter=c.createBiquadFilter(),gain=c.createGain();source.buffer=buffer;filter.type='lowpass';filter.frequency.setValueAtTime(1800,now);filter.frequency.exponentialRampToValueAtTime(110,now+.8);gain.gain.setValueAtTime(.22,now);gain.gain.exponentialRampToValueAtTime(.0001,now+.85);source.connect(filter).connect(gain).connect(c.destination);source.start();source.stop(now+.85);this.tone(85,.65,.16,'sine');
+    const source=c.createBufferSource(),filter=c.createBiquadFilter(),gain=c.createGain();source.buffer=buffer;filter.type='lowpass';filter.frequency.setValueAtTime(1800,now);filter.frequency.exponentialRampToValueAtTime(110,now+.8);gain.gain.setValueAtTime(.22*strength,now);gain.gain.exponentialRampToValueAtTime(.0001,now+.85);source.connect(filter).connect(gain).connect(c.destination);source.start();source.stop(now+.85);this.tone(85,.65,.16*strength,'sine');
   }
 }
 
@@ -162,7 +171,8 @@ export class ChaseGame {
     for(let y=ty-1;y<=ty+1;y++)for(let x=tx-1;x<=tx+1;x++)for (const n of roadNodes) { const p={x:n.x+x*SIZE,y:n.y+y*SIZE};const d = dist(p, this.player); if (d > minDistance && d < minDistance + 650 && !this.police.some(c => dist(c, p) < 100)) options.push(p); }
     const p = options[Math.floor(Math.random() * options.length)]; if (!p) return;
     const role=['chaser','interceptor','blocker'][this.policeSerial++%3];
-    this.police.push({ ...p, role, angle: Math.atan2(this.player.y - p.y, this.player.x - p.x), speed: 110, hp: 5, cooldown: 0, pathTimer: 0, path: [], near: false, nearHit: false, nearCooldown: 0, age: 0,recovery:0 });
+    const path = route(p, this.player), ahead = path.find(n => dist(n, p) > 35) || this.player;
+    this.police.push({ ...p, role, angle: Math.atan2(ahead.y - p.y, ahead.x - p.x), speed: 110, hp: 5, cooldown: 0, pathTimer: 0, path, near: false, nearHit: false, nearCooldown: 0, age: 0,recovery:0 });
   }
   addPickup(type) {
     for (let i = 0; i < 30; i++) {
@@ -178,11 +188,12 @@ export class ChaseGame {
   explode(car) {
     if(car.exploded)return;car.exploded=true;
     this.explosions.push({x:car.x,y:car.y,angle:car.angle,age:0});if(this.explosions.length>16)this.explosions.shift();
-    this.shake=Math.max(this.shake||0,21);this.flash=Math.max(this.flash||0,.72);
+    const feedback=explosionFeedback(car,this.player,this.camera,this.w,this.h);
+    this.shake=Math.max(this.shake||0,21*feedback);this.flash=Math.max(this.flash||0,.72*feedback);
     for(let i=0;i<85;i++){const a=rand(0,TAU),speed=rand(90,520),life=rand(.4,1.1);this.particles.push({x:car.x,y:car.y,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,life,max:life,color:i%3?'#ffd668':'#ff713a',size:rand(2,5),kind:'spark'});}
     for(let i=0;i<9;i++){const a=rand(0,TAU),speed=rand(80,240);this.particles.push({x:car.x,y:car.y,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,life:2,max:2,color:i%2?'#62727a':'#18232c',size:rand(5,12),kind:'debris',angle:a,spin:rand(-8,8)});}
     if(this.particles.length>550)this.particles.splice(0,this.particles.length-550);
-    this.audio.explosion?.();
+    if(feedback>0)this.audio.explosion?.(feedback);
   }
   drawExplosion(ctx,e) {
     const age=e.age;
@@ -276,12 +287,17 @@ export class ChaseGame {
       while (c.path.length>1&&(dist(c,c.path[0])<50||(dist(c,c.path[1])<170&&clearLine(c,c.path[1])))) c.path.shift();
       if(c.path.length&&dist(c,c.path[0])<30)c.path.shift();
       const target = c.recovery>0?nearestRoadNode(c):dist(c,p)<470&&clearLine(c,p)?(clearLine(c,predicted)?predicted:p):(c.path[0]||goal);
+      const closeChase = dist(c,p)<350 && clearLine(c,p);
+      c.chaseMemory = closeChase ? 1 : Math.max(0,(c.chaseMemory||0)-dt);
+      const chasing = c.chaseMemory>0;
       const desired = Math.atan2(target.y - c.y, target.x - c.x), diff = angleDiff(c.angle, desired);
       const arresting = dist(c, p) < 130 && Math.abs(p.speed) < 65 && clearLine(c, p);
       const pursuitSpeed=300+this.level*17+clamp((dist(c,p)-350)*.08,0,48),turnFactor=clamp(1-Math.abs(diff)/Math.PI,.32,1);
-      const maxSpeed = c.recovery>0?125:arresting ? clamp((dist(c,p)-52)*3,0,200) : Math.min(pursuitSpeed*turnFactor,Math.max(90,dist(c,target)*3));
-      c.speed = lerp(c.speed,maxSpeed,1-Math.exp(-3.8*dt));
-      movePatrol(c, desired, dt);
+      let maxSpeed = c.recovery>0?125:arresting ? clamp((dist(c,p)-52)*3,0,200) : Math.min(pursuitSpeed*turnFactor,Math.max(90,dist(c,target)*3));
+      if(!chasing)maxSpeed=Math.min(maxSpeed,lerp(320,95,clamp(Math.abs(diff)/1.4,0,1)),Math.max(75,Math.sqrt(2*190*dist(c,target))));
+      const response = !chasing && maxSpeed<c.speed ? 7 : 3.8;
+      c.speed = lerp(c.speed,maxSpeed,1-Math.exp(-response*dt));
+      movePatrol(c, desired, dt, chasing);
       const cw = this.hitWalls(c, 17);
       if (cw) {
         const velocity = Math.hypot(c.vx, c.vy), intoWall = -(c.vx * cw.x + c.vy * cw.y);
@@ -299,11 +315,13 @@ export class ChaseGame {
       if (d < 39) {
         c.nearHit = true;
         const ram = canBoostRam(p, c, boosting);
+        const contactDamage = boosting ? (isFrontContact(p,c) ? 3 : 2) : 1;
         const nx = (p.x - c.x) / Math.max(d, .01), ny = (p.y - c.y) / Math.max(d, .01);
         p.x += nx * (39 - d) * .55; p.y += ny * (39 - d) * .55; c.x -= nx * (39 - d) * .45; c.y -= ny * (39 - d) * .45;
         if (ram) {
           c.hp = 0;
         } else if (c.cooldown <= 0) {
+          c.hp = Math.max(0,c.hp-contactDamage);
           c.cooldown = .8; c.speed *= .4; c.vx *= .4; c.vy *= .4; this.burst(c.x, c.y, '#ffd39a', 12); this.shake = Math.max(this.shake, 4); this.audio.tone(95, .15, .05, 'sawtooth');
           if (p.cooldown <= 0) { this.health -= boosting ? 2 : 12; p.cooldown = .65; if (!boosting) p.speed *= .6; }
         }
