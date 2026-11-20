@@ -88,3 +88,145 @@ html{touch-action:pan-x pan-y;overscroll-behavior:none}body.playing{overflow:hid
 
 .ranking-name-form{margin:14px 0 18px;padding-bottom:14px;border-bottom:1px solid var(--border)}.ranking-name-form label{font-size:12px;color:var(--muted)}.ranking-name-form>div{display:flex;gap:10px;margin-top:8px}.ranking-name-form input{min-width:0;flex:1;background:#0a120d;border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:16px;padding:10px}.ranking-name-form button{padding:10px 16px;white-space:nowrap}#ranking-name-status{margin:5px 0 0;color:var(--lime)}
 
+/* Shared rankings have their own screen; personal results remain separate. */
+.ranking-launch{display:flex;flex-direction:column;gap:6px;text-align:left;width:330px;max-width:100%;margin-top:14px;padding:17px 20px;border:1px solid #a3da62;border-radius:5px;background:#20331beF;color:var(--text)}
+.ranking-launch:hover{background:#2b4321}
+.ranking-launch strong{font-size:1.125rem;color:var(--lime)}
+.ranking-launch>span,.ranking-launch>small{font-size:.875rem;line-height:1.45}
+.ranking-launch>small{color:#b6c9ad}
+body.ranking-open{overflow:hidden}
+.ranking-view{position:fixed;z-index:4;top:92px;bottom:0;left:0;right:0;background:#101913;display:flex;flex-direction:column;gap:16px;padding:24px max(24px,calc((100vw - 1080px)/2));overflow:hidden}
+.ranking-head{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-shrink:0}
+.ranking-head h2{font-size:1.75rem;margin:0 0 6px}
+.ranking-head p{font-size:1rem;color:#b3c3af;margin:0}
+.ranking-head button,.ranking-footer>button{font-size:.875rem;min-height:44px;padding:10px 16px;white-space:nowrap}
+.ranking-self{display:grid;grid-template-columns:1fr 1.4fr 1fr;gap:16px;flex-shrink:0;background:#21351b;border-left:4px solid var(--lime);border-radius:5px;padding:15px 20px}
+.ranking-self>div{display:flex;flex-direction:column;gap:5px;min-width:0}
+.ranking-self span{font-size:.875rem;color:#bdcfb4}
+.ranking-self strong{font-size:1.5rem;font-variant-numeric:tabular-nums;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ranking-self>div:first-child strong{color:var(--lime);font-size:1.875rem}
+.ranking-self small{color:var(--lime);font-size:.8125rem}
+.ranking-state{margin:0;flex-shrink:0;color:#b9cdb0;font-size:.875rem;line-height:1.5}
+.ranking-state[data-state=error],.ranking-state[data-state=waiting]{color:#ffd08d}
+.ranking-table-scroll{min-height:0;flex:1;overflow:auto;overscroll-behavior:contain;scrollbar-color:#5c7850 #152218}
+.ranking-table{width:100%;border-collapse:collapse;font-size:1rem;font-variant-numeric:tabular-nums}
+.ranking-table th{position:sticky;top:0;background:#152218;color:#b9c6b2;text-align:left;font-size:.875rem;font-weight:500}
+.ranking-table th,.ranking-table td{padding:14px 16px;border-bottom:1px solid #ffffff1a}
+.ranking-table th:first-child,.ranking-table td:first-child{width:70px}
+.ranking-table th:nth-child(n+3),.ranking-table td:nth-child(n+3){text-align:right;white-space:nowrap}
+.ranking-table td:nth-child(2){overflow-wrap:anywhere}
+.ranking-mine{background:#263c1c;color:#f1ffe9}
+.ranking-mine td:first-child{color:var(--lime);font-weight:800}
+.ranking-you{display:inline-block;color:var(--lime);font-size:.8125rem;margin-left:8px}
+#ranking-empty{font-size:1rem;line-height:1.7;color:#b9c6b2;padding:20px 10px}
+.ranking-footer{display:grid;grid-template-columns:1fr auto;gap:10px 16px;align-items:start;border-top:1px solid #ffffff25;padding-top:12px;flex-shrink:0}
+.ranking-settings summary{cursor:pointer;font-size:.875rem;min-height:44px;display:flex;align-items:center;color:#d5e2cc}
+.ranking-settings[open]{max-height:165px;overflow:auto;padding-right:6px}
+.ranking-settings .ranking-name-form{margin:0;padding:0;border:0}
+.ranking-settings label{font-size:.875rem}
+.ranking-settings #ranking-name-status{font-size:.8125rem;line-height:1.5}
+.ranking-privacy{grid-column:1/-1;font-size:.8125rem;color:#a2b29a;line-height:1.5;margin:0}
+#result-dialog{width:min(780px,calc(100vw - 32px))}
+.result-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:center}
+.result-performance .result-score{font-size:4rem;margin:8px 0 0}
+.result-performance .score-caption{font-size:.875rem;margin:0 0 12px}
+.result-performance .result-stats{grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+.result-performance .result-stats small{font-size:.8125rem}
+.result-performance .best-badge{font-size:.875rem}
+.online-result{background:#1c2b1b;border:1px solid #ffffff25;border-radius:6px;padding:20px;min-width:0}
+.online-result h3{font-size:1.125rem;line-height:1.4;margin:0 0 12px;color:#d0debe}
+.online-result[data-state=saved] h3{color:var(--lime)}
+.online-result[data-state=waiting] h3{color:#ffd08d}
+.online-result[data-state=rejected] h3,.online-result[data-state=local-error] h3{color:#ffa0a0}
+.online-result #save-state{font-size:.875rem;line-height:1.6;color:#bdcbb7;margin:0}
+.result-online-place{display:flex;flex-direction:column;gap:7px;border-top:1px solid #ffffff25;margin-top:16px;padding-top:14px}
+.result-online-place>span{font-size:.875rem;color:#bdcbb7}
+.result-online-place strong{font-size:1.5rem;color:var(--text)}
+.result-online-place small{font-size:.8125rem;color:#9dae94}
+.result-actions{display:grid;grid-template-columns:1.2fr 1fr;gap:12px;margin-top:20px;align-items:center}
+.result-actions>.secondary{margin:0}
+.result-actions>.text-button{grid-column:1/-1;justify-self:center;font-size:.875rem;min-height:38px}
+@media(max-width:720px){.ranking-view{top:72px}.ranking-head h2{font-size:1.375rem}.ranking-self{gap:10px;padding:12px}.ranking-self strong{font-size:1.125rem}.ranking-self>div:first-child strong{font-size:1.5rem}.ranking-table th,.ranking-table td{padding:12px 9px}}
+@media(orientation:landscape){
+  .touch-layout .ranking-view{top:46px;padding:10px max(18px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left));gap:8px}
+  .touch-layout .ranking-head{gap:8px}
+  .touch-layout .ranking-head h2{font-size:1.25rem;margin-bottom:3px}
+  .touch-layout .ranking-head p{font-size:.875rem}
+  .touch-layout .ranking-head button{padding:6px 10px}
+  .touch-layout .ranking-self{padding:8px 12px;gap:12px;grid-template-columns:1fr 1.3fr 1fr}
+  .touch-layout .ranking-self>div{gap:2px}
+  .touch-layout .ranking-self span{font-size:.8125rem}
+  .touch-layout .ranking-self strong{font-size:1.125rem}
+  .touch-layout .ranking-self>div:first-child strong{font-size:1.375rem}
+  .touch-layout .ranking-self small{display:none}
+  .touch-layout .ranking-state{font-size:.8125rem}
+  .touch-layout .ranking-table{font-size:.875rem}
+  .touch-layout .ranking-table th,.touch-layout .ranking-table td{padding:9px 10px}
+  .touch-layout .ranking-footer{gap:0 12px;padding-top:5px}
+  .touch-layout .ranking-privacy{font-size:.75rem}
+  .touch-layout .ranking-settings[open]{position:absolute;bottom:8px;left:18px;right:18px;z-index:6;background:#18271c;border:1px solid #5c7850;border-radius:6px;max-height:210px;padding:8px 14px;box-shadow:0 10px 40px #0008}
+  .touch-layout .ranking-settings summary{min-height:44px}
+  .touch-layout .ranking-launch{width:100%;max-width:330px;padding:10px 14px;margin-top:8px;gap:3px;flex-shrink:0;min-height:70px}
+  .touch-layout .ranking-launch strong{font-size:1rem}
+  .touch-layout .ranking-launch>span,.touch-layout .ranking-launch>small{font-size:.8125rem;line-height:1.35}
+  .touch-layout .hero .kicker,.touch-layout .hero .tagline{display:none}
+  .touch-layout .hero h1{font-size:clamp(34px,13dvh,54px);margin:3px 0 8px}
+  .touch-layout .start-button{padding:10px 16px;font-size:1rem}
+  .touch-layout .dashboard{grid-template-rows:minmax(0,1fr) minmax(0,1fr)}
+  .touch-layout #result-dialog{padding:16px 20px;max-height:calc(100dvh - 16px)}
+  .touch-layout #result-dialog>.kicker{display:none}
+  .touch-layout #result-dialog>h2{font-size:1.25rem;margin:0 0 10px}
+  .touch-layout .result-layout{gap:16px;align-items:start}
+  .touch-layout .result-performance .result-score{font-size:2.5rem;margin:0}
+  .touch-layout .result-performance .score-caption{font-size:.8125rem;margin:0 0 6px}
+  .touch-layout .result-performance .result-stats{margin:8px 0;gap:7px}
+  .touch-layout .result-performance .result-stats small{font-size:.75rem}
+  .touch-layout .result-performance .result-stats b{font-size:1rem}
+  .touch-layout .online-result{padding:12px}
+  .touch-layout .online-result h3{font-size:1rem;margin-bottom:6px}
+  .touch-layout .online-result #save-state{font-size:.8125rem;line-height:1.45}
+  .touch-layout .result-online-place{margin-top:8px;padding-top:7px;gap:3px}
+  .touch-layout .result-online-place strong{font-size:1.125rem}
+  .touch-layout .result-online-place small{font-size:.75rem}
+  .touch-layout .result-actions{gap:6px 10px;margin-top:10px}
+  .touch-layout .result-actions>.primary,.touch-layout .result-actions>.secondary{font-size:.875rem;padding:10px 8px;min-height:44px}
+  .touch-layout .result-actions>.text-button{padding:4px;min-height:32px}
+}
+@media(max-height:340px) and (orientation:landscape){
+  .touch-layout .ranking-view{top:40px}
+  .touch-layout .hero h1{font-size:clamp(30px,11dvh,40px);margin:0 0 4px}
+  .touch-layout .ranking-launch{min-height:56px;margin-top:5px;padding:7px 11px}
+  .touch-layout .ranking-launch>span{display:none}
+  .touch-layout .start-note{display:none}
+  .touch-layout .ranking-head p,.touch-layout .ranking-privacy{display:none}
+  .touch-layout .ranking-self{padding:6px 10px}
+  .touch-layout .ranking-state{font-size:.75rem}
+  .touch-layout .result-performance .score-caption{display:none}
+  .touch-layout .result-online-place small{display:none}
+  .touch-layout .result-actions>.text-button{min-height:26px}
+}
+@media(max-width:620px){.ranking-time{display:none}.ranking-table th:first-child,.ranking-table td:first-child{width:52px}.ranking-head h2{font-size:1.125rem}}
+@media(orientation:landscape){
+  .touch-layout.ranking-open #header{display:none}
+  .touch-layout .ranking-view{top:0}
+  .touch-layout #result-dialog[open]{display:flex;flex-direction:column;overflow:hidden}
+  .touch-layout #result-dialog>h2,.touch-layout .result-actions{flex-shrink:0}
+  .touch-layout .result-layout{min-height:0;overflow:auto;flex:1 1 auto}
+  .touch-layout .result-performance .result-stats{padding:7px 0;gap:5px}
+  .touch-layout .result-performance .result-stats small{margin-bottom:3px}
+  .touch-layout .result-performance .best-badge{float:right;padding:3px 6px;font-size:.75rem;letter-spacing:0;line-height:1.3;margin-top:4px}
+}
+@media(max-height:340px) and (orientation:landscape){
+  .touch-layout .ranking-state[data-state=ready]{display:none}
+  .touch-layout #result-dialog{padding:12px 16px}
+  .touch-layout .result-online-place small{display:none}
+  .touch-layout .ranking-head p{display:block;font-size:.75rem;line-height:1.2}
+  .touch-layout .ranking-launch>span{display:block}
+}
+@media(max-height:290px) and (orientation:landscape){
+  .touch-layout .ranking-launch>span{display:none}
+  .touch-layout .online-result[data-state=saved] #save-state{display:none}
+  .touch-layout .result-performance .result-stats{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+  .touch-layout .result-performance .result-stats small{font-size:.75rem;white-space:nowrap}
+}
+

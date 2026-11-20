@@ -13,6 +13,8 @@ const audio = new AudioEngine();
 const localService = createLocalApi();
 const onlineRanking = createOnlineRanking();
 let onlineRun = null;
+let rankingRequest = 0, resultState = 'sending', resultOwner = null;
+const onlineStandings = new Map();
 async function api(route, method = 'GET', body) {
   return localService.request(route, method, body);
 }
@@ -46,9 +48,12 @@ function renderUser() {
   for (const button of $('colors').children) button.setAttribute('aria-pressed', String(button.dataset.color === user.color));
 }
 function garage() {
+  $('ranking-screen').hidden = true; document.body.classList.remove('ranking-open');
   document.body.classList.remove('playing'); $('garage').hidden = false; $('auth').hidden = true; $('hud').hidden = true; game.garage(); renderUser(); window.scrollTo(0, 0);
+  refreshHomeStanding();
 }
 function showAuth() {
+  $('ranking-screen').hidden = true; document.body.classList.remove('ranking-open'); rankingRequest++;
   user = null; game.garage(); document.body.classList.remove('playing'); $('auth').hidden = false; $('garage').hidden = true; $('hud').hidden = true; $('identity').hidden = true; $('logout').hidden = true; window.scrollTo(0, 0);
 }
 function authMode(value) {
@@ -120,7 +125,8 @@ function showResult(result) {
   $('result-type').textContent = result.reason === 'busted' ? 'BUSTED / END OF THE CHASE' : 'WRECKED / END OF THE CHASE';
   $('result-score').textContent = format(result.score); $('result-time').textContent = time(result.seconds); $('result-near').textContent = result.nearMisses; $('result-destroyed').textContent = result.destroyed; $('result-combo').textContent = `×${result.maxCombo}`;
   $('new-best').hidden = result.score <= user.bestScore; $('retry-save').hidden = true; $('retry').disabled = true; $('back-garage').disabled = true;
-  $('save-state').textContent = '記録を保存しています…';
+  resultOwner = result.userId; $('result-ranking-button').disabled = true;
+  showOnlineState('sending', '端末への保存を準備しています。');
   if (!$('result-dialog').open) $('result-dialog').showModal();
 }
 async function saveResult() {
@@ -129,16 +135,37 @@ async function saveResult() {
   try {
     const result = await api('runs/finish', 'POST', pending); user = result.user; renderUser(); $('result-score').textContent = format(result.score);
     const localMessage = localService.persistent ? '✓ このブラウザに記録を保存しました。' : '✓ この画面を閉じるまで記録を保持します。';
-    $('save-state').textContent = localMessage;
+    showOnlineState('sending', `${localMessage} オンラインに送信しています。`);
     if (pending.onlineRun) {
-      try { await onlineRanking.finish(pending.onlineRun, pending); $('save-state').textContent = '✓ 端末への保存・オンラインランキングへの送信が完了しました。'; }
-      catch (error) { $('save-state').textContent = [400,401,404].includes(error.status) ? `${localMessage} オンライン記録は受け付けられませんでした。` : `${localMessage} オンライン送信待ちです。ランキングを開くと再送します。`; }
-    } else $('save-state').textContent = `${localMessage} この走行はオンライン対象外です。`;
+      try {
+        await onlineRanking.finish(pending.onlineRun, pending);
+        showOnlineState('saved', 'ランキングに反映済み。端末にも保存しました。');
+        try { const me = await onlineRanking.standing(user); rememberStanding(me); $('result-online-rank').textContent = rankText(me); } catch { $('result-online-rank').textContent = 'ランキングで確認'; }
+      } catch (error) { showOnlineState([400,401,404].includes(error.status) ? 'rejected' : 'waiting', [400,401,404].includes(error.status) ? `${localMessage} ${error.message}` : '端末の記録は保存済みです。通信が戻るか、ランキングを開くと再送します。'); }
+    } else showOnlineState('local', `${localMessage} オフラインで始めた走行はランキングには送信されません。`);
     pending = null;
     try { sessionStorage.removeItem('chase-unsaved'); } catch { /* Optional recovery cache. */ }
     $('retry-save').hidden = true; $('retry').disabled = false; $('back-garage').disabled = false;
-  } catch (e) { $('save-state').textContent = `未保存：${e.message} この画面を残して再試行してください。`; $('retry-save').hidden = false; }
-  finally { saving = false; $('retry-save').disabled = false; }
+  } catch (e) { showOnlineState('local-error', `未保存：${e.message} この画面を残して再試行してください。`); $('retry-save').hidden = false; }
+  finally { saving = false; $('retry-save').disabled = false; $('result-ranking-button').disabled = false; }
+}
+function rankText(me) { return Number.isSafeInteger(me?.rank) && me.rank > 0 ? `${format(me.rank)}位` : 'まだ順位なし'; }
+function rememberStanding(me) {
+  onlineStandings.set(user.id, me);
+  $('home-online-summary').textContent = me.rank ? `あなた ${rankText(me)} · 自己ベスト ${format(me.score)}点` : '走行結果を送信すると順位がつきます';
+}
+async function refreshHomeStanding() {
+  const owner = user; if (!owner) return;
+  const previous = onlineStandings.get(owner.id); if (previous) rememberStanding(previous);
+  else $('home-online-summary').textContent = 'オンラインの順位を確認中…';
+  try { const me = await onlineRanking.standing(owner); if (user?.id === owner.id) rememberStanding(me); }
+  catch { if (user?.id === owner.id) $('home-online-summary').textContent = '接続を確認して順位を見る'; }
+}
+function showOnlineState(state, detail) {
+  resultState = state; $('online-result').dataset.state = state;
+  $('online-save-title').textContent = { sending:'オンラインに送信中…', saved:'✓ オンライン送信完了', waiting:'オンライン送信待ち', local:'この端末に保存', rejected:'オンライン送信を確認できません', 'local-error':'端末への保存に失敗' }[state];
+  $('save-state').textContent = detail;
+  $('result-online-rank').textContent = { sending:'送信後に確定', saved:'順位を確認中…', waiting:'送信後に確定', local:'オンライン対象外', rejected:'未送信', 'local-error':'未保存' }[state];
 }
 function restorePending() {
   try { const item = JSON.parse(sessionStorage.getItem('chase-unsaved')); if (item && item.userId === user.id) { pending = item; showResult(item); saveResult(); } } catch { /* Ignore an unavailable or damaged recovery cache. */ }
@@ -152,16 +179,62 @@ function listRow(rank, title, subtitle, score, mine = false) {
   const total = document.createElement('strong'); total.textContent = format(score); row.append(copy, total); return row;
 }
 function empty(list, text) { const p = document.createElement('p'); p.className = 'empty'; p.textContent = text; list.append(p); }
-$('leaderboard-button').addEventListener('click', async () => {
-  $('leaderboard-list').replaceChildren(); empty($('leaderboard-list'), '読み込んでいます…'); $('leaderboard-dialog').showModal();
-  $('ranking-name').value = onlineRanking.playerFor(user)?.displayName || (user.isGuest ? `ドライバー-${user.id.slice(0,6).toUpperCase()}` : user.displayName);
-  $('ranking-name-status').textContent = '';
-  try { await onlineRanking.flush(user); const { rows } = await onlineRanking.leaderboard(user); $('leaderboard-list').replaceChildren(); if (!rows.length) empty($('leaderboard-list'), 'まだオンライン記録がありません。最初の逃走を決めよう。'); rows.forEach((r, i) => $('leaderboard-list').append(listRow(i + 1, r.displayName + (r.mine ? ' 〈あなた〉' : ''), `最長逃走 ${time(r.longestTime)}`, r.score, r.mine))); }
-  catch (e) { $('leaderboard-list').replaceChildren(); empty($('leaderboard-list'), e.message); }
+async function openRanking() {
+  if (!user) return;
+  for (const dialog of document.querySelectorAll('dialog[open]')) dialog.close();
+  game.garage(); $('garage').hidden = true; $('hud').hidden = true; document.body.classList.remove('playing'); document.body.classList.add('ranking-open'); $('ranking-screen').hidden = false;
+  $('ranking-name-status').textContent = ''; window.scrollTo(0, 0); $('ranking-title').focus();
+  await loadRanking();
+}
+async function loadRanking() {
+  const owner = user, request = ++rankingRequest; if (!owner) return;
+  const current = () => user?.id === owner.id && request === rankingRequest;
+  $('ranking-refresh').disabled = true; $('leaderboard-list').replaceChildren(); $('ranking-empty').hidden = true;
+  $('ranking-state').textContent = 'オンラインの最新記録を読み込んでいます…'; $('ranking-state').dataset.state = 'loading';
+  $('ranking-my-rank').textContent = '確認中…'; $('ranking-my-score').textContent = '—'; $('ranking-my-name').textContent = '—';
+  try {
+    let resendFailed = false;
+    try { await onlineRanking.flush(owner); } catch { resendFailed = true; }
+    const { rows, me } = await onlineRanking.leaderboard(owner); if (!current()) return;
+    rememberStanding(me);
+    $('ranking-my-rank').textContent = rankText(me); $('ranking-my-score').textContent = `${format(me.score)}点`; $('ranking-my-name').textContent = me.displayName; $('ranking-name').value = me.displayName;
+    for (const [i, row] of rows.entries()) {
+      const tr = document.createElement('tr'); if (row.mine) tr.className = 'ranking-mine';
+      for (const [index, value] of [String(i + 1), row.displayName, `${format(row.score)}点`, time(row.longestTime)].entries()) {
+        const td = document.createElement('td'); td.textContent = value;
+        if (index === 1 && row.mine) { const badge = document.createElement('span'); badge.className = 'ranking-you'; badge.textContent = 'あなた'; td.append(badge); }
+        if (index === 3) td.className = 'ranking-time'; tr.append(td);
+      }
+      $('leaderboard-list').append(tr);
+    }
+    if (!rows.length) { $('ranking-empty').hidden = false; $('ranking-empty').textContent = 'まだオンライン記録がありません。最初の逃走を決めよう。'; }
+    const waiting = onlineRanking.pendingCount(owner);
+    $('ranking-state').textContent = waiting ? `最新の成績を表示 · ${waiting}件の記録はオンライン送信待ちです` : `✓ オンラインの最新記録を表示 · ${new Date().toLocaleTimeString('ja-JP', {hour:'2-digit',minute:'2-digit'})} 更新`;
+    $('ranking-state').dataset.state = waiting ? 'waiting' : 'ready';
+    if (!resendFailed && !waiting && resultState === 'waiting' && resultOwner === owner.id) { showOnlineState('saved', '送信待ちの記録をランキングに反映しました。'); $('result-online-rank').textContent = rankText(me); }
+  } catch (error) {
+    if (!current()) return;
+    $('ranking-my-rank').textContent = '取得できません'; $('ranking-my-score').textContent = '—';
+    $('ranking-my-name').textContent = onlineRanking.playerFor(owner)?.displayName || owner.displayName;
+    $('ranking-name').value = onlineRanking.playerFor(owner)?.displayName || (owner.isGuest ? `ドライバー-${owner.id.slice(0,6).toUpperCase()}` : owner.displayName);
+    $('ranking-state').textContent = 'オンラインに接続できません。「最新に更新」で再試行してください。'; $('ranking-state').dataset.state = 'error';
+    $('ranking-empty').hidden = false; $('ranking-empty').textContent = error.message;
+  } finally { if (current()) $('ranking-refresh').disabled = false; }
+}
+$('leaderboard-button').addEventListener('click', openRanking);
+$('result-ranking-button').addEventListener('click', openRanking);
+$('ranking-back').addEventListener('click', () => { rankingRequest++; garage(); });
+$('ranking-refresh').addEventListener('click', loadRanking);
+window.addEventListener('keydown', e => { if (e.code === 'Escape' && !$('ranking-screen').hidden) { e.preventDefault(); rankingRequest++; garage(); } });
+window.addEventListener('online', async () => {
+  if (!user) return;
+  if (!$('ranking-screen').hidden) { loadRanking(); return; }
+  const owner = user;
+  try { await onlineRanking.flush(owner); const me = await onlineRanking.standing(owner); if (user?.id !== owner.id) return; rememberStanding(me); if (resultState === 'waiting' && resultOwner === owner.id && !onlineRanking.pendingCount(owner)) { showOnlineState('saved', '通信が戻り、ランキングに反映しました。'); $('result-online-rank').textContent = rankText(me); } } catch { /* Pending results stay stored for another attempt. */ }
 });
 $('ranking-name-form').addEventListener('submit', async e => {
   e.preventDefault(); $('ranking-name-save').disabled = true; $('ranking-name-status').textContent = '保存しています…';
-  try { await onlineRanking.rename(user, $('ranking-name').value.trim()); $('ranking-name-status').textContent = '表示名を保存しました。'; $('leaderboard-button').click(); }
+  try { await onlineRanking.rename(user, $('ranking-name').value.trim()); $('ranking-name-status').textContent = '表示名を保存しました。'; await loadRanking(); }
   catch (error) { $('ranking-name-status').textContent = error.message; }
   finally { $('ranking-name-save').disabled = false; }
 });

@@ -40,8 +40,15 @@ export function createOnlineRanking(options = {}) {
       throw error;
     }
   };
+  const standing = async user => {
+    const player = read().players[user.id];
+    if (!player) return { id: null, displayName: user.isGuest ? `ドライバー-${user.id.slice(0,6).toUpperCase()}` : user.displayName, rank: null, score: 0, longestTime: 0, games: 0 };
+    return (await request('/me', 'GET', undefined, player.token)).me;
+  };
   return {
     playerFor: user => read().players[user.id],
+    standing,
+    pendingCount: user => read().pending.filter(p => p.run.owner === user.id).length,
     async start(user) {
       const player = await ensure(user);
       const run = await request('/runs', 'POST', {}, player.token);
@@ -54,7 +61,7 @@ export function createOnlineRanking(options = {}) {
       write(db); return send(item);
     },
     async flush(user) { for (const item of read().pending.filter(p => p.run.owner === user.id)) await send(item); },
-    async leaderboard(user) { const data = await request('/leaderboard'), mine = read().players[user.id]?.id; return { rows: data.rows.map(row => ({ ...row, mine: row.id === mine })) }; },
+    async leaderboard(user) { const [data, me] = await Promise.all([request('/leaderboard'), standing(user)]), mine = read().players[user.id]?.id; return { rows: data.rows.map(row => ({ ...row, mine: row.id === mine })), me }; },
     async rename(user, displayName) {
       const player = await ensure(user), result = await request('/player', 'PATCH', { displayName }, player.token);
       const db = read(); db.players[user.id] = { ...player, displayName: result.displayName }; write(db); return result;
