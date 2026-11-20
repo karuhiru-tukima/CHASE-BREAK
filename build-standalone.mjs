@@ -10,9 +10,9 @@ const mobile = strip(await read('mobile-controls.mjs'));
 const ranking = strip(await read('online-ranking.mjs'));
 const javascript = `"use strict";\nconst City=(()=>{${city}\nreturn {roads,roadNodes,roadEdges,CITY_SIZE,plazas,parks,buildings,trees,parkedCars,obstacles,sampleRoad,roadRoute,nearestRoadNode,distanceToRoad,wrapCity};})();\nconst Renderer=(()=>{const {roads,roadNodes,plazas,parks,buildings,trees,sampleRoad,CITY_SIZE}=City;\n${renderer}\nreturn {drawCity};})();\nconst Mobile=(()=>{${mobile}\nreturn {TouchInput,touchDrive,setupMobile};})();\nconst Engine=(()=>{const {TouchInput,touchDrive}=Mobile;const {roads,roadNodes,CITY_SIZE:SIZE,buildings,obstacles,parkedCars,roadRoute,nearestRoadNode,sampleRoad,wrapCity}=City; const {drawCity}=Renderer;\n${engine}\nreturn {ChaseGame,AudioEngine};})();\nconst Offline=(()=>{${offline}\nreturn {createLocalApi};})();\nconst Ranking=(()=>{${ranking}\nreturn {createOnlineRanking};})();\n(async()=>{const {createOnlineRanking}=Ranking;const {setupMobile}=Mobile;const {ChaseGame,AudioEngine}=Engine;const {createLocalApi}=Offline;\n${app}\n})().catch(error=>{document.getElementById('loading').textContent='起動できませんでした：'+error.message;console.error(error);});`;
 const css = await read('style.css');
-const favicon = `data:image/svg+xml,${encodeURIComponent(await read('favicon.svg'))}`;
+const favicon = `data:image/png;base64,${(await readFile(new URL('./icon-192.png', import.meta.url))).toString('base64')}`;
 let html = await read('index.html');
-html = html.replace('<link rel="icon" href="/favicon.svg">', `<link rel="icon" href="${favicon}">`)
+html = html.replace('<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">', `<link rel="icon" type="image/png" sizes="192x192" href="${favicon}">`)
   .replace('<link rel="stylesheet" href="/style.css">', `<style>${css}</style>`)
   .replace('<script type="module" src="/app.js"></script>', '')
   .replace('href="/" aria-label="CHASE BREAK ホーム"', 'href="./index.html" aria-label="CHASE BREAK ホーム"')
