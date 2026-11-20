@@ -9,14 +9,31 @@ const angleDiff = (a, b) => Math.atan2(Math.sin(b - a), Math.cos(b - a));
 const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 const rand = (a, b) => a + Math.random() * (b - a);
 
-export const RAM_MIN_KMH = 300;
+export const RAM_MIN_KMH = 250;
+export function boostAcceleration(speedKmh) {
+  return 420 * (1 + .4 * clamp((200 - Math.max(0, speedKmh)) / 200, 0, 1));
+}
+
+export function movePatrol(car, desired, dt) {
+  // Steering takes time to build; fast patrols carry momentum through a turn.
+  const turnLimit = lerp(3.4, 1.7, clamp(car.speed / 320, 0, 1));
+  const requestedTurn = clamp(angleDiff(car.angle, desired) * 2.8, -turnLimit, turnLimit);
+  car.turnRate = lerp(car.turnRate || 0, requestedTurn, 1 - Math.exp(-4 * dt));
+  const vx = car.vx ?? Math.cos(car.angle) * car.speed;
+  const vy = car.vy ?? Math.sin(car.angle) * car.speed;
+  car.angle += car.turnRate * dt;
+  const grip = 1 - Math.exp(-lerp(5, 2.1, clamp(car.speed / 320, 0, 1)) * dt);
+  car.vx = lerp(vx, Math.cos(car.angle) * car.speed, grip);
+  car.vy = lerp(vy, Math.sin(car.angle) * car.speed, grip);
+  car.x += car.vx * dt; car.y += car.vy * dt;
+}
 export function canBoostRam(player, car, boosting) {
   if (!boosting) return false;
   const fx = Math.cos(player.angle), fy = Math.sin(player.angle);
   if ((player.vx * fx + player.vy * fy) * .65 < RAM_MIN_KMH) return false;
   const dx = car.x - player.x, dy = car.y - player.y, distance = Math.hypot(dx, dy);
   if (distance <= .01 || distance >= 39 || dx * fx + dy * fy < distance * .5) return false;
-  const cvx = Math.cos(car.angle || 0) * (car.speed || 0), cvy = Math.sin(car.angle || 0) * (car.speed || 0);
+  const cvx = car.vx ?? Math.cos(car.angle || 0) * (car.speed || 0), cvy = car.vy ?? Math.sin(car.angle || 0) * (car.speed || 0);
   return (player.vx - cvx) * dx + (player.vy - cvy) * dy > 0;
 }
 
@@ -207,7 +224,7 @@ export class ChaseGame {
     const boostState=boostStep(this.boost,this.boostLocked,key('Space')||this.mouse.boosting||this.touchInput.boosting,braking,dt),boosting=boostState.active;
     this.boost=boostState.energy;this.boostLocked=boostState.locked;this.boosting=boosting;
     if(boosting&&this.reverseMode){this.reverseMode=false;p.speed=Math.max(65,p.speed);const forward=p.vx*Math.cos(p.angle)+p.vy*Math.sin(p.angle);if(forward<0){p.vx-=forward*Math.cos(p.angle);p.vy-=forward*Math.sin(p.angle);}}
-    if (boosting) p.speed += 420 * dt;
+    if (boosting) p.speed += boostAcceleration(Math.hypot(p.vx, p.vy) * .65) * dt;
     else if(this.reverseMode&&!braking)p.speed=Math.max(-145,p.speed-240*dt);
     else if (accelerating) {const target=mouse?mouse.targetSpeed:290;p.speed=p.speed<target?Math.min(target,p.speed+200*dt):Math.max(target,p.speed-85*dt);}
     else if (!braking) p.speed *= Math.exp(-.18 * dt);
@@ -260,15 +277,19 @@ export class ChaseGame {
       if(c.path.length&&dist(c,c.path[0])<30)c.path.shift();
       const target = c.recovery>0?nearestRoadNode(c):dist(c,p)<470&&clearLine(c,p)?(clearLine(c,predicted)?predicted:p):(c.path[0]||goal);
       const desired = Math.atan2(target.y - c.y, target.x - c.x), diff = angleDiff(c.angle, desired);
-      c.angle += clamp(diff, -4.7 * dt, 4.7 * dt);
       const arresting = dist(c, p) < 130 && Math.abs(p.speed) < 65 && clearLine(c, p);
       const pursuitSpeed=300+this.level*17+clamp((dist(c,p)-350)*.08,0,48),turnFactor=clamp(1-Math.abs(diff)/Math.PI,.32,1);
       const maxSpeed = c.recovery>0?125:arresting ? clamp((dist(c,p)-52)*3,0,200) : Math.min(pursuitSpeed*turnFactor,Math.max(90,dist(c,target)*3));
       c.speed = lerp(c.speed,maxSpeed,1-Math.exp(-3.8*dt));
-      c.x += Math.cos(c.angle) * c.speed * dt; c.y += Math.sin(c.angle) * c.speed * dt;
+      movePatrol(c, desired, dt);
       const cw = this.hitWalls(c, 17);
       if (cw) {
-        if (c.cooldown <= 0 && c.speed > 150) { c.hp--; c.cooldown = 1.2; this.burst(c.x, c.y, '#ffc484', 10); }
+        const velocity = Math.hypot(c.vx, c.vy), intoWall = -(c.vx * cw.x + c.vy * cw.y);
+        // A hard head-on crash is fatal; glancing blows retain the durability rule.
+        if (intoWall > 250 && intoWall >= velocity * .78) c.hp = 0;
+        else if (c.cooldown <= 0 && intoWall > 150) { c.hp--; c.cooldown = 1.2; this.burst(c.x, c.y, '#ffc484', 10); }
+        if (intoWall > 0) { c.vx += intoWall * cw.x * 1.1; c.vy += intoWall * cw.y * 1.1; }
+        c.vx *= .55; c.vy *= .55; c.turnRate = 0;
         c.speed*=.55;c.recovery=.7;c.pathTimer=0;c.angle+=clamp(angleDiff(c.angle,Math.atan2(cw.y,cw.x)),-4*dt,4*dt);
       }
       const d = dist(c, p);
@@ -283,7 +304,7 @@ export class ChaseGame {
         if (ram) {
           c.hp = 0;
         } else if (c.cooldown <= 0) {
-          c.cooldown = .8; c.speed *= .4; this.burst(c.x, c.y, '#ffd39a', 12); this.shake = Math.max(this.shake, 4); this.audio.tone(95, .15, .05, 'sawtooth');
+          c.cooldown = .8; c.speed *= .4; c.vx *= .4; c.vy *= .4; this.burst(c.x, c.y, '#ffd39a', 12); this.shake = Math.max(this.shake, 4); this.audio.tone(95, .15, .05, 'sawtooth');
           if (p.cooldown <= 0) { this.health -= boosting ? 2 : 12; p.cooldown = .65; if (!boosting) p.speed *= .6; }
         }
       }
