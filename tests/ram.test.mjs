@@ -2,12 +2,12 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { canBoostRam, RAM_MIN_KMH, ChaseGame } from '../src/game.js';
 
-test('boost ram requires actual forward speed of 300 km/h and frontal contact', () => {
-  assert.equal(RAM_MIN_KMH, 300);
-  const player={x:0,y:0,angle:0,vx:300/.65,vy:0,speed:480};
+test('boost ram requires actual forward speed of 250 km/h and frontal contact', () => {
+  assert.equal(RAM_MIN_KMH, 250);
+  const player={x:0,y:0,angle:0,vx:250/.65,vy:0,speed:480};
   const front={x:30,y:0,speed:0,angle:0};
   assert.equal(canBoostRam(player,front,true),true);
-  assert.equal(canBoostRam({...player,vx:299.99/.65},front,true),false);
+  assert.equal(canBoostRam({...player,vx:249.99/.65},front,true),false);
   assert.equal(canBoostRam(player,front,false),false);
   for (const target of [{x:-30,y:0},{x:0,y:30},{x:40,y:0}]) assert.equal(canBoostRam(player,target,true),false);
   assert.equal(canBoostRam({...player,vx:-480},front,true),false);
