@@ -10,6 +10,10 @@ const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 const rand = (a, b) => a + Math.random() * (b - a);
 
 export const RAM_MIN_KMH = 250;
+export function pursuitTarget(level) { return [3,5,7,9,12][clamp(Math.floor(level),1,5)-1]; }
+export function playerCausedCrash(car, player, camera, width, height) {
+  return (car.pursuitCredit || 0)>0 && dist(car,player)<450 && explosionFeedback(car,player,camera,width,height)>0;
+}
 export function boostAcceleration(speedKmh) {
   return 420 * (1 + .8 * clamp((200 - Math.max(0, speedKmh)) / 200, 0, 1));
 }
@@ -165,14 +169,15 @@ export class ChaseGame {
   pause() { if (this.mode !== 'playing') return; this.mode = 'paused'; this.keys.clear(); this.mouse.braking=false; this.mouse.boosting=false; this.reverseMode=false;this.touchInput?.reset();this.audio.update(0, false, 0); this.onPause(); }
   resume() { if (this.mode === 'paused') { this.keys.clear(); this.mode = 'playing'; } }
   garage() { this.mode = 'demo'; this.keys.clear(); this.audio.update(0, false, 0); }
-  addPolice(minDistance = 580) {
+  addPolice(minDistance = 580, reinforcement = false) {
     const options = [];
     const tx=Math.floor(this.player.x/SIZE),ty=Math.floor(this.player.y/SIZE);
-    for(let y=ty-1;y<=ty+1;y++)for(let x=tx-1;x<=tx+1;x++)for (const n of roadNodes) { const p={x:n.x+x*SIZE,y:n.y+y*SIZE};const d = dist(p, this.player); if (d > minDistance && d < minDistance + 650 && !this.police.some(c => dist(c, p) < 100)) options.push(p); }
+    for(let y=ty-1;y<=ty+1;y++)for(let x=tx-1;x<=tx+1;x++)for (const n of roadNodes) { const p={x:n.x+x*SIZE,y:n.y+y*SIZE};const d = dist(p, this.player),offScreen=Math.abs((p.x-this.camera.x)*this.camera.zoom)>this.w/2+65||Math.abs((p.y-this.camera.y)*this.camera.zoom)>this.h/2+65; if (d > minDistance && d < minDistance + 650 && (!reinforcement||offScreen) && !this.police.some(c => dist(c, p) < 100)) options.push(p); }
+    if(reinforcement){options.sort((a,b)=>dist(a,this.player)-dist(b,this.player));options.splice(8);}
     const p = options[Math.floor(Math.random() * options.length)]; if (!p) return;
     const role=['chaser','interceptor','blocker'][this.policeSerial++%3];
     const path = route(p, this.player), ahead = path.find(n => dist(n, p) > 35) || this.player;
-    this.police.push({ ...p, role, angle: Math.atan2(ahead.y - p.y, ahead.x - p.x), speed: 110, hp: 5, cooldown: 0, pathTimer: 0, path, near: false, nearHit: false, nearCooldown: 0, age: 0,recovery:0 });
+    this.police.push({ ...p, role, angle: Math.atan2(ahead.y - p.y, ahead.x - p.x), speed: reinforcement ? 220 : 110, hp: 5, cooldown: 0, pathTimer: 0, path, near: false, nearHit: false, nearCooldown: 0, age: 0,recovery:0,pursuitCredit:0 });
   }
   addPickup(type) {
     for (let i = 0; i < 30; i++) {
@@ -268,9 +273,13 @@ export class ChaseGame {
     this.afterimageClock+=dt;
     if(boosting&&motionSpeed>90&&!this.reduced&&this.afterimageClock>=.03){this.afterimageClock=0;this.afterimages.push({x:p.x,y:p.y,angle:p.angle,life:.28});if(this.afterimages.length>14)this.afterimages.shift();}
     const level = Math.min(5, 1 + Math.floor(this.time / 25));
-    if (level !== this.level) { this.level = level; this.onAnnouncement(`WANTED LEVEL ${level}`); this.audio.tone(700, .4); }
+    if (level !== this.level) { this.level = level; this.spawnTimer=Math.min(this.spawnTimer,.2);this.onAnnouncement(`WANTED LEVEL ${level}`); this.audio.tone(700, .4); }
     this.spawnTimer -= dt;
-    if (this.spawnTimer <= 0) { this.spawnTimer = 1.8; if (this.police.length < Math.min(12, 3 + Math.floor(this.time / 12))) this.addPolice(500); }
+    if (this.spawnTimer <= 0) {
+      this.spawnTimer = this.level>=4 ? .4 : .9;
+      const missing=pursuitTarget(this.level)-this.police.filter(c=>c.hp>0&&dist(c,p)<2200).length;
+      for(let i=0;i<Math.min(missing,this.level>=4?2:1);i++)this.addPolice(300,true);
+    }
     let nearby = 0;
     for (const c of this.police) {
       c.age += dt; c.cooldown = Math.max(0, c.cooldown - dt); c.nearCooldown = Math.max(0, c.nearCooldown - dt); c.pathTimer -= dt;c.recovery=Math.max(0,(c.recovery||0)-dt);
@@ -288,6 +297,8 @@ export class ChaseGame {
       if(c.path.length&&dist(c,c.path[0])<30)c.path.shift();
       const target = c.recovery>0?nearestRoadNode(c):dist(c,p)<470&&clearLine(c,p)?(clearLine(c,predicted)?predicted:p):(c.path[0]||goal);
       const closeChase = dist(c,p)<350 && clearLine(c,p);
+      // Credit only a recent, moving-player chase, never a remote routing accident.
+      c.pursuitCredit = closeChase && dist(c,p)<280 && motionSpeed>90 ? 2 : Math.max(0,(c.pursuitCredit||0)-dt);
       c.chaseMemory = closeChase ? 1 : Math.max(0,(c.chaseMemory||0)-dt);
       const chasing = c.chaseMemory>0;
       const desired = Math.atan2(target.y - c.y, target.x - c.x), diff = angleDiff(c.angle, desired);
@@ -302,8 +313,9 @@ export class ChaseGame {
       if (cw) {
         const velocity = Math.hypot(c.vx, c.vy), intoWall = -(c.vx * cw.x + c.vy * cw.y);
         // A hard head-on crash is fatal; glancing blows retain the durability rule.
-        if (intoWall > 250 && intoWall >= velocity * .78) c.hp = 0;
-        else if (c.cooldown <= 0 && intoWall > 150) { c.hp--; c.cooldown = 1.2; this.burst(c.x, c.y, '#ffc484', 10); }
+        const causedByPlayer=playerCausedCrash(c,p,this.camera,this.w,this.h);
+        if (causedByPlayer && intoWall > 250 && intoWall >= velocity * .78) c.hp = 0;
+        else if (causedByPlayer && c.cooldown <= 0 && intoWall > 150) { c.hp--; c.cooldown = 1.2; this.burst(c.x, c.y, '#ffc484', 10); }
         if (intoWall > 0) { c.vx += intoWall * cw.x * 1.1; c.vy += intoWall * cw.y * 1.1; }
         c.vx *= .55; c.vy *= .55; c.turnRate = 0;
         c.speed*=.55;c.recovery=.7;c.pathTimer=0;c.angle+=clamp(angleDiff(c.angle,Math.atan2(cw.y,cw.x)),-4*dt,4*dt);
@@ -332,7 +344,9 @@ export class ChaseGame {
       const a = this.police[i], b = this.police[j], d = dist(a, b);
       if (d > 0 && d < 36) { const nx = (b.x - a.x) / d, ny = (b.y - a.y) / d; a.x -= nx * (36 - d) / 2; a.y -= ny * (36 - d) / 2; b.x += nx * (36 - d) / 2; b.y += ny * (36 - d) / 2; }
     }
+    const previousCount=this.police.length;
     this.police = this.police.filter(c => c.hp > 0 && dist(c,p)<2200);
+    if(this.police.length<previousCount)this.spawnTimer=Math.min(this.spawnTimer,.3);
     // Car-to-car separation can push a vehicle against a wall or the map edge.
     this.hitWalls(p, 17);
     for (const c of this.police) this.hitWalls(c, 17);
