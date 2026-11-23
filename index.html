@@ -252,7 +252,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}button,input{-webkit-ap
   <section id="auth" class="auth-screen" hidden><div class="auth-intro"><p class="kicker">THE CITY IS YOUR PLAYGROUND.</p><h1>CHASE<br><span>BREAK.</span></h1><p>サイレンを背に、<br>まだ見ぬ自己ベストへ。</p><span class="auth-caption">独自アカウントで遊べる、カーチェイス。</span></div><div class="auth-card"><div class="eyebrow">DRIVER ACCESS / 01</div><h2 id="auth-title">おかえり、ドライバー。</h2><p id="auth-description">ガレージにログインして、夜の街へ。</p><div class="tabs"><button id="login-tab" class="active" type="button">ログイン</button><button id="register-tab" type="button">新規登録</button></div><form id="auth-form"><label>ユーザー名<input id="username" name="username" autocomplete="username" pattern="[a-zA-Z0-9_]{3,24}" minlength="3" maxlength="24" placeholder="例：night_driver" required></label><label id="display-label" hidden>表示名<input id="displayName" name="displayName" maxlength="24" placeholder="ランキングに表示される名前"></label><label>パスワード<input id="password" name="password" type="password" autocomplete="current-password" minlength="8" maxlength="128" placeholder="8文字以上" required></label><p id="auth-error" class="error" role="alert"></p><button id="auth-submit" class="primary" type="submit">ログインして始める ↗</button></form><button id="guest-play" class="secondary" type="button">登録せずに遊ぶ →</button><p class="auth-footnote">アカウントと記録は、このブラウザ内だけに保存されます。<br>初めての方は「新規登録」から作成できます。</p></div></section>
   <section id="hud" hidden><div class="hud-top"><div class="hud-score"><small>SCORE</small><strong id="score">000000</strong><span id="combo"></span></div><div class="wanted"><span id="wanted-stars">★ ☆ ☆ ☆ ☆</span><small id="wanted-text">手配レベル 1</small></div><div class="hud-time"><small>ESCAPE TIME</small><strong id="time">00:00</strong><button id="pause-button" class="icon-button">Ⅱ 一時停止</button></div></div><div id="announcement" role="status"></div><div id="capture-warning" hidden>⚠ 包囲されている！ 加速して脱出 <progress id="capture" max="100" value="0"></progress></div><div class="hud-bottom"><div><span>INTEGRITY <b id="health-value">100%</b></span><progress id="health" max="100" value="100"></progress></div><div class="speed"><strong id="speed">0</strong><span id="drive-mode">KM/H</span></div><div><span>BOOST <b id="boost-status">左クリック</b></span><progress id="boost" max="100" value="100"></progress></div></div><p id="mouse-hint">マウスで移動 · 左ブースト · 右ブレーキ · SHIFT長押しでバック</p><div id="touch-controls" aria-label="タッチ操作"><div id="steering-pad" data-touch="stick" role="group" aria-label="移動スティック"><span id="steering-knob"></span><small>DRIVE</small></div><div class="touch-actions"><button id="reverse-button" aria-pressed="false" aria-label="バック切り替え">R<small>タップ</small></button><button data-touch="brake" aria-label="ブレーキ長押し">BRAKE<small>長押し</small></button><button data-touch="boost" aria-label="ブースト長押し">BOOST<small>長押し</small></button></div></div></section>
   <aside id="rotate-notice" role="status"><span>↻</span><h2>スマホを横向きにしてね</h2><p>左スティックで移動。右のボタンでブレーキ・ブースト。<br>Rをタップするとバックに切り替わります。</p></aside><div id="loading">エンジンを準備しています…</div>
-  <dialog id="help-dialog"><button class="close-dialog" aria-label="閉じる">×</button><p class="kicker">DRIVER'S MANUAL</p><h2>街を、味方につけろ。</h2><div class="control-list"><p><kbd>マウス</kbd><span>カーソルの方向へ自動で走る</span></p><p><kbd>右クリック長押し</kbd><span>ブレーキ・停止</span></p><p><kbd>W A S D / 矢印キー</kbd><span>キーボード操作にも切り替え可</span></p><p><kbd>左クリック長押し / SPACE</kbd><span>ブーストで包囲を突破</span></p><p><kbd>SHIFT 長押し</kbd><span>バック（ブーストで前進に切り替え）</span></p><p><kbd>ESC</kbd><span>一時停止</span></p></div><p class="muted">スマホは横画面。左スティックを動かして走行し、BRAKE・BOOSTは長押し。Rはタップでバックを切り替え、ブーストすると前進に戻ります。</p><p class="muted">近くをすり抜けるとニアミスボーナス。ブースト中に250km/h以上で前方のパトカーにぶつかると一撃で撃破（側面・後方は対象外）。建物へ誘い込んでも追跡不能に。続けて決めると最大5倍のコンボ！</p><p class="muted">200km/h未満のブーストは、速度が低いほど加速が強まり、200km/hで通常の加速に戻ります。ブーストが空になると35％回復するまで再使用できません。緑の＋は修理、青い稲妻はブースト回復。耐久値が0、または低速で包囲されると終了です。</p><button class="primary close-dialog">了解、走ろう。</button></dialog>
+  <dialog id="help-dialog"><button class="close-dialog" aria-label="閉じる">×</button><p class="kicker">DRIVER'S MANUAL</p><h2>街を、味方につけろ。</h2><div class="control-list"><p><kbd>マウス</kbd><span>カーソルの方向へ自動で走る</span></p><p><kbd>右クリック長押し</kbd><span>ブレーキ・停止</span></p><p><kbd>W A S D / 矢印キー</kbd><span>キーボード操作にも切り替え可</span></p><p><kbd>左クリック長押し / SPACE</kbd><span>ブーストで包囲を突破</span></p><p><kbd>SHIFT 長押し</kbd><span>バック（ブーストで前進に切り替え）</span></p><p><kbd>ESC</kbd><span>一時停止</span></p></div><p class="muted">スマホは横画面。左スティックを動かして走行し、BRAKE・BOOSTは長押し。Rはタップでバックを切り替え、ブーストすると前進に戻ります。</p><p class="muted">近くをすり抜けるとニアミスボーナス。パトカーとの通常接触は耐久ダメージ1。ブースト中は前方3・側面や後方2。250km/h以上での前方ブースト衝突は一撃で撃破。近くで追手を建物へ誘い込んでも追跡不能に。続けて決めると最大5倍のコンボ！手配が上がるほど増援が増え、☆5では12台を目安に補充されます。</p><p class="muted">200km/h未満のブーストは、速度が低いほど加速が強まり、200km/hで通常の加速に戻ります。ブーストが空になると35％回復するまで再使用できません。緑の＋は修理、青い稲妻はブースト回復。耐久値が0、または低速で包囲されると終了です。</p><button class="primary close-dialog">了解、走ろう。</button></dialog>
   <dialog id="pause-dialog"><p class="pause-rotate">↻ スマホを横向きにしてね</p><p class="kicker">TAKE A BREATH</p><h2>まだ、逃げられる。</h2><p class="muted">一時停止中は逃走時間も止まります。</p><button id="resume" class="primary">逃走を続ける →</button><button id="abandon" class="secondary">今回の逃走をやめる</button><p class="muted small">中断したプレイの記録は保存されません。</p></dialog>
   <dialog id="result-dialog"><p class="kicker" id="result-type">END OF THE CHASE</p><h2 id="result-title">追跡終了。</h2><div class="result-layout"><section class="result-performance" aria-label="今回の逃走結果"><div id="new-best" class="best-badge" hidden>自己ベスト更新！</div><div class="result-score" id="result-score">0</div><p class="score-caption">今回のスコア</p><div class="result-stats"><div><small>逃走時間</small><b id="result-time"></b></div><div><small>ニアミス</small><b id="result-near"></b></div><div><small>追跡不能</small><b id="result-destroyed"></b></div><div><small>最大倍率</small><b id="result-combo"></b></div></div></section><section id="online-result" class="online-result" data-state="sending" aria-live="polite"><h3 id="online-save-title">オンラインに送信中…</h3><p id="save-state">端末への保存を準備しています。</p><div class="result-online-place"><span>あなたの順位</span><strong id="result-online-rank">送信後に確定</strong><small>全プレイヤー共通の自己ベスト順位</small></div></section></div><button id="retry-save" class="secondary" hidden>端末への保存を再試行</button><div class="result-actions"><button id="result-ranking-button" class="primary">ランキングで確認する</button><button id="retry" class="secondary">もう一度逃走する</button><button id="back-garage" class="text-button">← ホームへ戻る</button></div></dialog>
   <section id="ranking-screen" class="ranking-view" aria-labelledby="ranking-title" hidden>
@@ -615,29 +615,42 @@ const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 const rand = (a, b) => a + Math.random() * (b - a);
 
 const RAM_MIN_KMH = 250;
+function pursuitTarget(level) { return [3,5,7,9,12][clamp(Math.floor(level),1,5)-1]; }
+function playerCausedCrash(car, player, camera, width, height) {
+  return (car.pursuitCredit || 0)>0 && dist(car,player)<450 && explosionFeedback(car,player,camera,width,height)>0;
+}
 function boostAcceleration(speedKmh) {
-  return 420 * (1 + .4 * clamp((200 - Math.max(0, speedKmh)) / 200, 0, 1));
+  return 420 * (1 + .8 * clamp((200 - Math.max(0, speedKmh)) / 200, 0, 1));
 }
 
-function movePatrol(car, desired, dt) {
+function movePatrol(car, desired, dt, chasing = true) {
   // Steering takes time to build; fast patrols carry momentum through a turn.
-  const turnLimit = lerp(3.4, 1.7, clamp(car.speed / 320, 0, 1));
+  const turnLimit = chasing ? lerp(3.4, 1.7, clamp(car.speed / 320, 0, 1)) : 3.8;
   const requestedTurn = clamp(angleDiff(car.angle, desired) * 2.8, -turnLimit, turnLimit);
-  car.turnRate = lerp(car.turnRate || 0, requestedTurn, 1 - Math.exp(-4 * dt));
+  car.turnRate = lerp(car.turnRate || 0, requestedTurn, 1 - Math.exp(-(chasing ? 4 : 9) * dt));
   const vx = car.vx ?? Math.cos(car.angle) * car.speed;
   const vy = car.vy ?? Math.sin(car.angle) * car.speed;
   car.angle += car.turnRate * dt;
-  const grip = 1 - Math.exp(-lerp(5, 2.1, clamp(car.speed / 320, 0, 1)) * dt);
+  const grip = 1 - Math.exp(-(chasing ? lerp(5, 2.1, clamp(car.speed / 320, 0, 1)) : 9) * dt);
   car.vx = lerp(vx, Math.cos(car.angle) * car.speed, grip);
   car.vy = lerp(vy, Math.sin(car.angle) * car.speed, grip);
   car.x += car.vx * dt; car.y += car.vy * dt;
 }
+
+function explosionFeedback(car, player, camera, width, height) {
+  const x = (car.x - camera.x) * camera.zoom, y = (car.y - camera.y) * camera.zoom;
+  if (Math.abs(x) > width / 2 + 50 || Math.abs(y) > height / 2 + 50) return 0;
+  return clamp((700 - dist(car, player)) / 400, 0, 1);
+}
+function isFrontContact(player, car) {
+  const dx = car.x - player.x, dy = car.y - player.y, distance = Math.hypot(dx, dy);
+  return distance > .01 && distance < 39 && dx * Math.cos(player.angle) + dy * Math.sin(player.angle) >= distance * .5;
+}
 function canBoostRam(player, car, boosting) {
-  if (!boosting) return false;
+  if (!boosting || !isFrontContact(player, car)) return false;
   const fx = Math.cos(player.angle), fy = Math.sin(player.angle);
   if ((player.vx * fx + player.vy * fy) * .65 < RAM_MIN_KMH) return false;
-  const dx = car.x - player.x, dy = car.y - player.y, distance = Math.hypot(dx, dy);
-  if (distance <= .01 || distance >= 39 || dx * fx + dy * fy < distance * .5) return false;
+  const dx = car.x - player.x, dy = car.y - player.y;
   const cvx = car.vx ?? Math.cos(car.angle || 0) * (car.speed || 0), cvy = car.vy ?? Math.sin(car.angle || 0) * (car.speed || 0);
   return (player.vx - cvx) * dx + (player.vy - cvy) * dy > 0;
 }
@@ -707,11 +720,11 @@ class AudioEngine {
     o.type = type; o.frequency.setValueAtTime(freq, now); o.frequency.exponentialRampToValueAtTime(Math.max(30, freq * .45), now + duration);
     g.gain.setValueAtTime(volume, now); g.gain.exponentialRampToValueAtTime(.0001, now + duration); o.connect(g).connect(this.context.destination); o.start(); o.stop(now + duration);
   }
-  explosion() {
+  explosion(strength = 1) {
     if(!this.enabled||!this.context)return;
     const c=this.context,now=c.currentTime,buffer=c.createBuffer(1,Math.floor(c.sampleRate*.85),c.sampleRate),data=buffer.getChannelData(0);
     for(let i=0;i<data.length;i++)data[i]=(Math.random()*2-1)*Math.pow(1-i/data.length,2);
-    const source=c.createBufferSource(),filter=c.createBiquadFilter(),gain=c.createGain();source.buffer=buffer;filter.type='lowpass';filter.frequency.setValueAtTime(1800,now);filter.frequency.exponentialRampToValueAtTime(110,now+.8);gain.gain.setValueAtTime(.22,now);gain.gain.exponentialRampToValueAtTime(.0001,now+.85);source.connect(filter).connect(gain).connect(c.destination);source.start();source.stop(now+.85);this.tone(85,.65,.16,'sine');
+    const source=c.createBufferSource(),filter=c.createBiquadFilter(),gain=c.createGain();source.buffer=buffer;filter.type='lowpass';filter.frequency.setValueAtTime(1800,now);filter.frequency.exponentialRampToValueAtTime(110,now+.8);gain.gain.setValueAtTime(.22*strength,now);gain.gain.exponentialRampToValueAtTime(.0001,now+.85);source.connect(filter).connect(gain).connect(c.destination);source.start();source.stop(now+.85);this.tone(85,.65,.16*strength,'sine');
   }
 }
 
@@ -761,13 +774,15 @@ class ChaseGame {
   pause() { if (this.mode !== 'playing') return; this.mode = 'paused'; this.keys.clear(); this.mouse.braking=false; this.mouse.boosting=false; this.reverseMode=false;this.touchInput?.reset();this.audio.update(0, false, 0); this.onPause(); }
   resume() { if (this.mode === 'paused') { this.keys.clear(); this.mode = 'playing'; } }
   garage() { this.mode = 'demo'; this.keys.clear(); this.audio.update(0, false, 0); }
-  addPolice(minDistance = 580) {
+  addPolice(minDistance = 580, reinforcement = false) {
     const options = [];
     const tx=Math.floor(this.player.x/SIZE),ty=Math.floor(this.player.y/SIZE);
-    for(let y=ty-1;y<=ty+1;y++)for(let x=tx-1;x<=tx+1;x++)for (const n of roadNodes) { const p={x:n.x+x*SIZE,y:n.y+y*SIZE};const d = dist(p, this.player); if (d > minDistance && d < minDistance + 650 && !this.police.some(c => dist(c, p) < 100)) options.push(p); }
+    for(let y=ty-1;y<=ty+1;y++)for(let x=tx-1;x<=tx+1;x++)for (const n of roadNodes) { const p={x:n.x+x*SIZE,y:n.y+y*SIZE};const d = dist(p, this.player),offScreen=Math.abs((p.x-this.camera.x)*this.camera.zoom)>this.w/2+65||Math.abs((p.y-this.camera.y)*this.camera.zoom)>this.h/2+65; if (d > minDistance && d < minDistance + 650 && (!reinforcement||offScreen) && !this.police.some(c => dist(c, p) < 100)) options.push(p); }
+    if(reinforcement){options.sort((a,b)=>dist(a,this.player)-dist(b,this.player));options.splice(8);}
     const p = options[Math.floor(Math.random() * options.length)]; if (!p) return;
     const role=['chaser','interceptor','blocker'][this.policeSerial++%3];
-    this.police.push({ ...p, role, angle: Math.atan2(this.player.y - p.y, this.player.x - p.x), speed: 110, hp: 5, cooldown: 0, pathTimer: 0, path: [], near: false, nearHit: false, nearCooldown: 0, age: 0,recovery:0 });
+    const path = route(p, this.player), ahead = path.find(n => dist(n, p) > 35) || this.player;
+    this.police.push({ ...p, role, angle: Math.atan2(ahead.y - p.y, ahead.x - p.x), speed: reinforcement ? 220 : 110, hp: 5, cooldown: 0, pathTimer: 0, path, near: false, nearHit: false, nearCooldown: 0, age: 0,recovery:0,pursuitCredit:0 });
   }
   addPickup(type) {
     for (let i = 0; i < 30; i++) {
@@ -783,11 +798,12 @@ class ChaseGame {
   explode(car) {
     if(car.exploded)return;car.exploded=true;
     this.explosions.push({x:car.x,y:car.y,angle:car.angle,age:0});if(this.explosions.length>16)this.explosions.shift();
-    this.shake=Math.max(this.shake||0,21);this.flash=Math.max(this.flash||0,.72);
+    const feedback=explosionFeedback(car,this.player,this.camera,this.w,this.h);
+    this.shake=Math.max(this.shake||0,21*feedback);this.flash=Math.max(this.flash||0,.72*feedback);
     for(let i=0;i<85;i++){const a=rand(0,TAU),speed=rand(90,520),life=rand(.4,1.1);this.particles.push({x:car.x,y:car.y,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,life,max:life,color:i%3?'#ffd668':'#ff713a',size:rand(2,5),kind:'spark'});}
     for(let i=0;i<9;i++){const a=rand(0,TAU),speed=rand(80,240);this.particles.push({x:car.x,y:car.y,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,life:2,max:2,color:i%2?'#62727a':'#18232c',size:rand(5,12),kind:'debris',angle:a,spin:rand(-8,8)});}
     if(this.particles.length>550)this.particles.splice(0,this.particles.length-550);
-    this.audio.explosion?.();
+    if(feedback>0)this.audio.explosion?.(feedback);
   }
   drawExplosion(ctx,e) {
     const age=e.age;
@@ -862,9 +878,13 @@ class ChaseGame {
     this.afterimageClock+=dt;
     if(boosting&&motionSpeed>90&&!this.reduced&&this.afterimageClock>=.03){this.afterimageClock=0;this.afterimages.push({x:p.x,y:p.y,angle:p.angle,life:.28});if(this.afterimages.length>14)this.afterimages.shift();}
     const level = Math.min(5, 1 + Math.floor(this.time / 25));
-    if (level !== this.level) { this.level = level; this.onAnnouncement(`WANTED LEVEL ${level}`); this.audio.tone(700, .4); }
+    if (level !== this.level) { this.level = level; this.spawnTimer=Math.min(this.spawnTimer,.2);this.onAnnouncement(`WANTED LEVEL ${level}`); this.audio.tone(700, .4); }
     this.spawnTimer -= dt;
-    if (this.spawnTimer <= 0) { this.spawnTimer = 1.8; if (this.police.length < Math.min(12, 3 + Math.floor(this.time / 12))) this.addPolice(500); }
+    if (this.spawnTimer <= 0) {
+      this.spawnTimer = this.level>=4 ? .4 : .9;
+      const missing=pursuitTarget(this.level)-this.police.filter(c=>c.hp>0&&dist(c,p)<2200).length;
+      for(let i=0;i<Math.min(missing,this.level>=4?2:1);i++)this.addPolice(300,true);
+    }
     let nearby = 0;
     for (const c of this.police) {
       c.age += dt; c.cooldown = Math.max(0, c.cooldown - dt); c.nearCooldown = Math.max(0, c.nearCooldown - dt); c.pathTimer -= dt;c.recovery=Math.max(0,(c.recovery||0)-dt);
@@ -881,18 +901,26 @@ class ChaseGame {
       while (c.path.length>1&&(dist(c,c.path[0])<50||(dist(c,c.path[1])<170&&clearLine(c,c.path[1])))) c.path.shift();
       if(c.path.length&&dist(c,c.path[0])<30)c.path.shift();
       const target = c.recovery>0?nearestRoadNode(c):dist(c,p)<470&&clearLine(c,p)?(clearLine(c,predicted)?predicted:p):(c.path[0]||goal);
+      const closeChase = dist(c,p)<350 && clearLine(c,p);
+      // Credit only a recent, moving-player chase, never a remote routing accident.
+      c.pursuitCredit = closeChase && dist(c,p)<280 && motionSpeed>90 ? 2 : Math.max(0,(c.pursuitCredit||0)-dt);
+      c.chaseMemory = closeChase ? 1 : Math.max(0,(c.chaseMemory||0)-dt);
+      const chasing = c.chaseMemory>0;
       const desired = Math.atan2(target.y - c.y, target.x - c.x), diff = angleDiff(c.angle, desired);
       const arresting = dist(c, p) < 130 && Math.abs(p.speed) < 65 && clearLine(c, p);
       const pursuitSpeed=300+this.level*17+clamp((dist(c,p)-350)*.08,0,48),turnFactor=clamp(1-Math.abs(diff)/Math.PI,.32,1);
-      const maxSpeed = c.recovery>0?125:arresting ? clamp((dist(c,p)-52)*3,0,200) : Math.min(pursuitSpeed*turnFactor,Math.max(90,dist(c,target)*3));
-      c.speed = lerp(c.speed,maxSpeed,1-Math.exp(-3.8*dt));
-      movePatrol(c, desired, dt);
+      let maxSpeed = c.recovery>0?125:arresting ? clamp((dist(c,p)-52)*3,0,200) : Math.min(pursuitSpeed*turnFactor,Math.max(90,dist(c,target)*3));
+      if(!chasing)maxSpeed=Math.min(maxSpeed,lerp(320,95,clamp(Math.abs(diff)/1.4,0,1)),Math.max(75,Math.sqrt(2*190*dist(c,target))));
+      const response = !chasing && maxSpeed<c.speed ? 7 : 3.8;
+      c.speed = lerp(c.speed,maxSpeed,1-Math.exp(-response*dt));
+      movePatrol(c, desired, dt, chasing);
       const cw = this.hitWalls(c, 17);
       if (cw) {
         const velocity = Math.hypot(c.vx, c.vy), intoWall = -(c.vx * cw.x + c.vy * cw.y);
         // A hard head-on crash is fatal; glancing blows retain the durability rule.
-        if (intoWall > 250 && intoWall >= velocity * .78) c.hp = 0;
-        else if (c.cooldown <= 0 && intoWall > 150) { c.hp--; c.cooldown = 1.2; this.burst(c.x, c.y, '#ffc484', 10); }
+        const causedByPlayer=playerCausedCrash(c,p,this.camera,this.w,this.h);
+        if (causedByPlayer && intoWall > 250 && intoWall >= velocity * .78) c.hp = 0;
+        else if (causedByPlayer && c.cooldown <= 0 && intoWall > 150) { c.hp--; c.cooldown = 1.2; this.burst(c.x, c.y, '#ffc484', 10); }
         if (intoWall > 0) { c.vx += intoWall * cw.x * 1.1; c.vy += intoWall * cw.y * 1.1; }
         c.vx *= .55; c.vy *= .55; c.turnRate = 0;
         c.speed*=.55;c.recovery=.7;c.pathTimer=0;c.angle+=clamp(angleDiff(c.angle,Math.atan2(cw.y,cw.x)),-4*dt,4*dt);
@@ -904,11 +932,13 @@ class ChaseGame {
       if (d < 39) {
         c.nearHit = true;
         const ram = canBoostRam(p, c, boosting);
+        const contactDamage = boosting ? (isFrontContact(p,c) ? 3 : 2) : 1;
         const nx = (p.x - c.x) / Math.max(d, .01), ny = (p.y - c.y) / Math.max(d, .01);
         p.x += nx * (39 - d) * .55; p.y += ny * (39 - d) * .55; c.x -= nx * (39 - d) * .45; c.y -= ny * (39 - d) * .45;
         if (ram) {
           c.hp = 0;
         } else if (c.cooldown <= 0) {
+          c.hp = Math.max(0,c.hp-contactDamage);
           c.cooldown = .8; c.speed *= .4; c.vx *= .4; c.vy *= .4; this.burst(c.x, c.y, '#ffd39a', 12); this.shake = Math.max(this.shake, 4); this.audio.tone(95, .15, .05, 'sawtooth');
           if (p.cooldown <= 0) { this.health -= boosting ? 2 : 12; p.cooldown = .65; if (!boosting) p.speed *= .6; }
         }
@@ -919,7 +949,9 @@ class ChaseGame {
       const a = this.police[i], b = this.police[j], d = dist(a, b);
       if (d > 0 && d < 36) { const nx = (b.x - a.x) / d, ny = (b.y - a.y) / d; a.x -= nx * (36 - d) / 2; a.y -= ny * (36 - d) / 2; b.x += nx * (36 - d) / 2; b.y += ny * (36 - d) / 2; }
     }
+    const previousCount=this.police.length;
     this.police = this.police.filter(c => c.hp > 0 && dist(c,p)<2200);
+    if(this.police.length<previousCount)this.spawnTimer=Math.min(this.spawnTimer,.3);
     // Car-to-car separation can push a vehicle against a wall or the map edge.
     this.hitWalls(p, 17);
     for (const c of this.police) this.hitWalls(c, 17);
